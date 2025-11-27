@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import path from 'path'
 
@@ -8,5 +8,10 @@ export default defineConfig({
     alias: {
       $lib: path.resolve('./src/lib')
     }
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./tests/setup.ts']
   }
 })
