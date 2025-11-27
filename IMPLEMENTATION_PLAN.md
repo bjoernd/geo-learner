@@ -465,6 +465,8 @@ export function getFederalStateByName(name: string): FederalState | undefined {
 - Import in a test file and check that array has 16 elements
 - Check that all required fields are present
 
+**✅ COMPLETED**
+
 ---
 
 ### Step 2.3: Create Neighboring Countries Data
