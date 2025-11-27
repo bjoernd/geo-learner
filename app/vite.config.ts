@@ -7,7 +7,8 @@ export default defineConfig({
   resolve: {
     alias: {
       $lib: path.resolve('./src/lib')
-    }
+    },
+    conditions: ['browser']
   },
   test: {
     globals: true,
