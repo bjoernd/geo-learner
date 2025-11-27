@@ -108,3 +108,37 @@ npm run test:ui
 - Map must show full Germany + partial view of neighboring countries
 - Interface designed for ages 11-14 (detailed UI, text input comfortable)
 - Responsive design for desktop and tablet
+
+## Development Workflow Notes
+
+### Interactive HTML Tools for SVG/Data Work
+
+When working with SVG maps or complex data structures, standalone HTML tools are effective for interactive exploration and editing. Examples from this project:
+
+**Pattern: Interactive Identifier Tools**
+- Created `identify-states.html` - Click SVG polygons to map them to state IDs
+- Created `identify-countries.html` - Similar tool for neighboring countries
+- Created `draw-countries.html` - Draw polygon boundaries by clicking points on the map
+
+**Why this approach:**
+- Provides visual feedback during identification/editing
+- Allows user (Bjoern) to make decisions requiring domain knowledge
+- Faster iteration than editing SVG XML directly
+- Tools run via simple HTTP server: `python3 -m http.server 8000`
+
+**Tool pattern:**
+1. Load source data (SVG file) via fetch
+2. Make elements interactive with click handlers
+3. Show current state in sidebar panel
+4. Allow user to assign/identify/draw
+5. Export result as JSON or code snippet
+6. Claude uses exported data to update source files programmatically
+
+**Location:** Development tools stored in project root (not in `app/` directory). These are temporary aids, not part of the application.
+
+**Created for SVG map setup (Steps 3.1-3.2):**
+- `identify-states.html` - Mapped 71 polygons to 16 German states
+- `draw-countries.html` - User drew 9 neighboring country boundaries
+- `test-map.html` - Verification that all 25 regions work correctly
+
+This pattern is reusable for similar tasks: data classification, mapping, visual editing, or identification where human judgment is needed.
