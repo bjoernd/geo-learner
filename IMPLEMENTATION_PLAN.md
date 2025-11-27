@@ -74,6 +74,8 @@ npm run dev
 - Visit http://localhost:5173 in browser
 - See Svelte logo and counter button
 
+**✅ COMPLETED**
+
 ---
 
 ### Step 1.2: Configure TypeScript
