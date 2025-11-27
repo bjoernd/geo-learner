@@ -3,7 +3,7 @@ import type { Country } from '$lib/types'
 export const neighboringCountries: Country[] = [
   {
     id: 'dk',
-    name: 'Dänemark',
+    name: 'DÃ¤nemark',
     capital: 'Kopenhagen',
     svgPathId: 'DK'
   },
@@ -16,7 +16,7 @@ export const neighboringCountries: Country[] = [
   {
     id: 'be',
     name: 'Belgien',
-    capital: 'Brüssel',
+    capital: 'BrÃ¼ssel',
     svgPathId: 'BE'
   },
   {
@@ -39,7 +39,7 @@ export const neighboringCountries: Country[] = [
   },
   {
     id: 'at',
-    name: 'Österreich',
+    name: 'Ã–sterreich',
     capital: 'Wien',
     svgPathId: 'AT'
   },

@@ -13,7 +13,7 @@ export const cities: City[] = [
   },
   {
     id: 'muenchen',
-    name: 'München',
+    name: 'MÃ¼nchen',
     stateId: 'by',
     svgPathId: 'city-muenchen',
     coordinates: { x: 650, y: 700 }
@@ -69,7 +69,7 @@ export const cities: City[] = [
   },
   {
     id: 'duesseldorf',
-    name: 'Düsseldorf',
+    name: 'DÃ¼sseldorf',
     stateId: 'nw',
     svgPathId: 'city-duesseldorf',
     coordinates: { x: 350, y: 420 }
@@ -83,7 +83,7 @@ export const cities: City[] = [
   },
   {
     id: 'saarbruecken',
-    name: 'Saarbrücken',
+    name: 'SaarbrÃ¼cken',
     stateId: 'sl',
     svgPathId: 'city-saarbruecken',
     coordinates: { x: 350, y: 600 }
@@ -126,7 +126,7 @@ export const cities: City[] = [
   },
   {
     id: 'koeln',
-    name: 'Köln',
+    name: 'KÃ¶ln',
     stateId: 'nw',
     svgPathId: 'city-koeln',
     coordinates: { x: 350, y: 450 }
@@ -140,7 +140,7 @@ export const cities: City[] = [
   },
   {
     id: 'nuernberg',
-    name: 'Nürnberg',
+    name: 'NÃ¼rnberg',
     stateId: 'by',
     svgPathId: 'city-nuernberg',
     coordinates: { x: 550, y: 600 }

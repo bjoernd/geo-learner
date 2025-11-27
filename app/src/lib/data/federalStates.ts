@@ -3,14 +3,14 @@ import type { FederalState } from '$lib/types'
 export const federalStates: FederalState[] = [
   {
     id: 'bw',
-    name: 'Baden-Württemberg',
+    name: 'Baden-WÃ¼rttemberg',
     capital: 'Stuttgart',
     svgPathId: 'DE-BW'
   },
   {
     id: 'by',
     name: 'Bayern',
-    capital: 'München',
+    capital: 'MÃ¼nchen',
     svgPathId: 'DE-BY'
   },
   {
@@ -58,7 +58,7 @@ export const federalStates: FederalState[] = [
   {
     id: 'nw',
     name: 'Nordrhein-Westfalen',
-    capital: 'Düsseldorf',
+    capital: 'DÃ¼sseldorf',
     svgPathId: 'DE-NW'
   },
   {
@@ -70,7 +70,7 @@ export const federalStates: FederalState[] = [
   {
     id: 'sl',
     name: 'Saarland',
-    capital: 'Saarbrücken',
+    capital: 'SaarbrÃ¼cken',
     svgPathId: 'DE-SL'
   },
   {
@@ -93,7 +93,7 @@ export const federalStates: FederalState[] = [
   },
   {
     id: 'th',
-    name: 'Thüringen',
+    name: 'ThÃ¼ringen',
     capital: 'Erfurt',
     svgPathId: 'DE-TH'
   }
