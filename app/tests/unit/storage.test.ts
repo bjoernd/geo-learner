@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import {
   saveToStorage,
   loadFromStorage,
@@ -115,9 +115,18 @@ describe('Storage Utilities', () => {
     })
 
     it('should return default value for invalid JSON', () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
       localStorage.setItem('invalid', 'not valid json {')
       const loaded = loadFromStorage('invalid', 'default')
       expect(loaded).toBe('default')
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to load from localStorage (key: invalid):'),
+        expect.any(Error)
+      )
+
+      consoleErrorSpy.mockRestore()
     })
   })
 
