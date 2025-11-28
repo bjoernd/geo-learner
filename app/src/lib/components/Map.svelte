@@ -3,8 +3,11 @@
   import { createEventDispatcher } from 'svelte'
   import type { GameMode } from '$lib/types'
 
-  export let mode: GameMode | null = null
+  export let mode: GameMode | null = null // Used for city mode (to be implemented)
   export let highlightedRegion: string | null = null
+
+  // Suppress unused warning - mode will be used when city mode is implemented
+  $: void mode
   export let correctRegion: string | null = null
   export let incorrectClickPosition: { x: number; y: number } | null = null
 
