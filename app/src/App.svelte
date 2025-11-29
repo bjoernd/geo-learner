@@ -185,10 +185,10 @@
   <header>
     <h1>Erdkunde</h1>
     <div class="header-actions">
-      <button class="icon-button" on:click={() => (showStatistics = true)} title="Statistiken">
+      <button class="icon-button" on:click={() => (showStatistics = true)} title="Statistiken" aria-label="Statistiken anzeigen">
         📊
       </button>
-      <button class="icon-button" on:click={() => (showSettings = true)} title="Einstellungen">
+      <button class="icon-button" on:click={() => (showSettings = true)} title="Einstellungen" aria-label="Einstellungen öffnen">
         ⚙️
       </button>
     </div>
