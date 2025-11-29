@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { get } from 'svelte/store'
-import { gameState, currentMode, currentQuestion, currentScore, isSessionActive } from '$lib/stores/gameState'
+import { gameState, currentMode, currentQuestion, currentScore, isSessionActive, answeredRegions } from '$lib/stores/gameState'
 
 describe('Game State Store', () => {
   beforeEach(() => {
@@ -154,5 +154,59 @@ describe('Game State Store', () => {
 
     gameState.clearSession()
     expect(get(isSessionActive)).toBe(false)
+  })
+
+  // Test permanent highlighting of answered regions
+  it('should track correctly answered regions', () => {
+    gameState.startNewSession('laender')
+    const question = get(gameState).currentQuestion!
+    const regionId = question.location.svgPathId
+
+    gameState.submitLocationAnswer(regionId)
+
+    const regions = get(answeredRegions)
+    expect(regions.correct).toContain(regionId)
+    expect(regions.incorrect).not.toContain(regionId)
+  })
+
+  it('should track incorrectly answered regions', () => {
+    gameState.startNewSession('laender')
+    const question = get(gameState).currentQuestion!
+    const wrongRegionId = 'WRONG-ID'
+
+    gameState.submitLocationAnswer(wrongRegionId)
+
+    const regions = get(answeredRegions)
+    expect(regions.incorrect).toContain(question.location.svgPathId)
+    expect(regions.correct).not.toContain(question.location.svgPathId)
+  })
+
+  it('should accumulate answered regions across multiple questions', () => {
+    gameState.startNewSession('city')
+
+    const question1 = get(gameState).currentQuestion!
+    gameState.submitLocationAnswer(question1.location.svgPathId, (question1.location as any).coordinates)
+
+    const question2 = get(gameState).currentQuestion!
+    gameState.submitLocationAnswer('WRONG')
+
+    const regions = get(answeredRegions)
+    expect(regions.correct).toContain(question1.location.svgPathId)
+    expect(regions.incorrect).toContain(question2.location.svgPathId)
+    expect(regions.correct).toHaveLength(1)
+    expect(regions.incorrect).toHaveLength(1)
+  })
+
+  it('should reset answered regions when starting new session', () => {
+    gameState.startNewSession('city')
+    const question = get(gameState).currentQuestion!
+    gameState.submitLocationAnswer(question.location.svgPathId, (question.location as any).coordinates)
+
+    expect(get(answeredRegions).correct).toHaveLength(1)
+
+    gameState.startNewSession('city')
+    const regions = get(answeredRegions)
+    expect(regions.correct).toHaveLength(0)
+    expect(regions.incorrect).toHaveLength(0)
   })
 })

@@ -7,7 +7,7 @@
   import Timer from '$lib/components/Timer.svelte'
   import Settings from '$lib/components/Settings.svelte'
   import Statistics from '$lib/components/Statistics.svelte'
-  import { gameState, isSessionActive } from '$lib/stores/gameState'
+  import { gameState, isSessionActive, answeredRegions } from '$lib/stores/gameState'
   import { settings } from '$lib/stores/settings'
   import { statistics } from '$lib/stores/statistics'
   import type { GameMode } from '$lib/types'
@@ -237,6 +237,8 @@
           mode={currentMode}
           highlightedRegion={highlightedRegion}
           correctRegion={correctRegionHighlight}
+          correctRegions={$answeredRegions.correct}
+          incorrectRegions={$answeredRegions.incorrect}
           on:regionClick={handleRegionClick}
           on:mapClick={handleMapClick}
         />

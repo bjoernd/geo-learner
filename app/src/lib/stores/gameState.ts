@@ -11,7 +11,11 @@ const initialState: GameState = {
   questionQueue: [],
   awaitingCapitalInput: false,
   lastAnswerCorrect: null,
-  correctLocation: null
+  correctLocation: null,
+  answeredRegions: {
+    correct: [],
+    incorrect: []
+  }
 }
 
 function createGameStateStore() {
@@ -42,7 +46,11 @@ function createGameStateStore() {
         questionQueue: questions.slice(1),
         awaitingCapitalInput: false,
         lastAnswerCorrect: null,
-        correctLocation: null
+        correctLocation: null,
+        answeredRegions: {
+          correct: [],
+          incorrect: []
+        }
       }))
     },
 
@@ -61,6 +69,17 @@ function createGameStateStore() {
           timestamp: Date.now()
         }
 
+        // Track answered region
+        const regionId = state.currentQuestion.location.svgPathId
+        const updatedAnsweredRegions = {
+          correct: correct
+            ? [...state.answeredRegions.correct, regionId]
+            : state.answeredRegions.correct,
+          incorrect: !correct
+            ? [...state.answeredRegions.incorrect, regionId]
+            : state.answeredRegions.incorrect
+        }
+
         // If correct and mode requires capital, wait for capital input
         const needsCapital = correct &&
                             state.currentMode === 'laender' &&
@@ -72,6 +91,7 @@ function createGameStateStore() {
             awaitingCapitalInput: true,
             lastAnswerCorrect: correct,
             correctLocation: state.currentQuestion.location,
+            answeredRegions: updatedAnsweredRegions,
             currentSession: {
               ...state.currentSession,
               score: state.currentSession.score + 1, // Point for location
@@ -84,6 +104,7 @@ function createGameStateStore() {
             ...state,
             lastAnswerCorrect: correct,
             correctLocation: state.currentQuestion.location,
+            answeredRegions: updatedAnsweredRegions,
             currentSession: {
               ...state.currentSession,
               score: correct ? state.currentSession.score + 1 : state.currentSession.score,
@@ -234,3 +255,4 @@ export const currentScore = derived(gameState, $state => $state.currentSession?.
 export const isSessionActive = derived(gameState, $state =>
   $state.currentSession !== null && $state.currentQuestion !== null
 )
+export const answeredRegions = derived(gameState, $state => $state.answeredRegions)

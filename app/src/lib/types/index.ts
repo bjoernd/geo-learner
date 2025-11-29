@@ -74,4 +74,8 @@ export interface GameState {
   awaitingCapitalInput: boolean
   lastAnswerCorrect: boolean | null
   correctLocation: Location | null
+  answeredRegions: {
+    correct: string[]  // svgPathIds of correctly answered regions
+    incorrect: string[] // svgPathIds of incorrectly answered regions
+  }
 }

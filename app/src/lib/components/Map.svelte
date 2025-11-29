@@ -10,6 +10,8 @@
   $: void mode
   export let correctRegion: string | null = null
   export let incorrectClickPosition: { x: number; y: number } | null = null
+  export let correctRegions: string[] = [] // Permanently highlighted correct regions
+  export let incorrectRegions: string[] = [] // Permanently highlighted incorrect regions
 
   const dispatch = createEventDispatcher<{
     regionClick: { regionId: string; svgPathId: string }
@@ -101,7 +103,18 @@
   function updateHighlighting() {
     // Remove all existing highlights
     svgElement.querySelectorAll('.clickable-region').forEach(region => {
-      region.classList.remove('highlighted', 'correct', 'incorrect')
+      region.classList.remove('highlighted', 'correct', 'incorrect', 'permanent-correct', 'permanent-incorrect')
+    })
+
+    // Apply permanent highlighting for answered regions
+    correctRegions.forEach(regionId => {
+      const region = svgElement.querySelector(`#${regionId}`)
+      region?.classList.add('permanent-correct')
+    })
+
+    incorrectRegions.forEach(regionId => {
+      const region = svgElement.querySelector(`#${regionId}`)
+      region?.classList.add('permanent-incorrect')
     })
 
     // Add highlight to specified region
@@ -172,6 +185,14 @@
   .map-container :global(.clickable-region.incorrect) {
     fill: #ef5350;
     animation: pulse-incorrect 0.5s ease;
+  }
+
+  .map-container :global(.clickable-region.permanent-correct) {
+    fill: #66bb6a;
+  }
+
+  .map-container :global(.clickable-region.permanent-incorrect) {
+    fill: #ef5350;
   }
 
   @keyframes pulse-correct {
