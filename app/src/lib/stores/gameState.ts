@@ -3,6 +3,7 @@ import type { GameState, GameMode, Question, Answer, Location, GameSession } fro
 import { federalStates } from '$lib/data/federalStates'
 import { neighboringCountries } from '$lib/data/neighboringCountries'
 import { cities } from '$lib/data/cities'
+import { compareText } from '$lib/utils/textMatching'
 
 const initialState: GameState = {
   currentMode: null,
@@ -125,7 +126,7 @@ function createGameStateStore() {
         if (!state.currentQuestion || !state.currentSession) return state
 
         const correctCapital = state.currentQuestion.location.capital!
-        const correct = compareCapitalAnswer(userAnswer, correctCapital)
+        const correct = compareText(userAnswer, correctCapital)
 
         // Update the last answer with capital result
         const answers = [...state.currentSession.answers]
@@ -236,19 +237,6 @@ function isClickNearCity(
   const dy = clickPosition.y - city.coordinates.y
   const distance = Math.sqrt(dx * dx + dy * dy)
   return distance <= threshold
-}
-
-function compareCapitalAnswer(userAnswer: string, correctAnswer: string): boolean {
-  // Normalize both strings - convert umlauts to standard forms
-  const normalize = (str: string) =>
-    str.toLowerCase()
-      .trim()
-      .replace(/ü/g, 'u')
-      .replace(/ö/g, 'o')
-      .replace(/ä/g, 'a')
-      .replace(/ß/g, 'ss')
-
-  return normalize(userAnswer) === normalize(correctAnswer)
 }
 
 export const gameState = createGameStateStore()
