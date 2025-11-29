@@ -1,47 +1,114 @@
-# Svelte + TS + Vite
+# Erdkunde
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+Eine interaktive Webanwendung zum Erlernen der deutschen Geographie, einschließlich Bundesländer, Nachbarländer und Städte.
 
-## Recommended IDE Setup
+## Features
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+- **Zwei Spielmodi:**
+  - Länder: Lerne alle 16 deutschen Bundesländer plus die 9 Nachbarländer und ihre Hauptstädte
+  - Städte: Finde deutsche Städte auf der Karte
 
-## Need an official Svelte framework?
+- **Interaktive Karte:** Klicke auf Regionen, um deine Antworten abzugeben
+- **Fortschrittsverfolgung:** Statistiken und Erfolgsquoten werden gespeichert
+- **Timer (optional):** Fordere dich selbst mit Zeitlimits heraus
+- **Responsive Design:** Funktioniert auf Desktop und Tablet
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## Technologie
 
-## Technical considerations
+- **Framework:** Svelte + TypeScript
+- **Build Tool:** Vite
+- **Testing:** Vitest
+- **Styling:** Scoped CSS
+- **Datenspeicherung:** LocalStorage
 
-**Why use this over SvelteKit?**
+## Installation
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+### Voraussetzungen
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+- Node.js 18+ und npm
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+### Lokale Entwicklung
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+```bash
+# Repository klonen
+git clone https://github.com/yourusername/geo-learner.git
+cd geo-learner/app
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+# Abhängigkeiten installieren
+npm install
 
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+# Entwicklungsserver starten
+npm run dev
 ```
+
+Die Anwendung ist dann unter http://localhost:5173 verfügbar.
+
+### Testen
+
+```bash
+# Tests ausführen
+npm test
+
+# Tests mit UI ausführen
+npm run test:ui
+
+# Tests einmalig ausführen (CI)
+npm run test:run
+```
+
+### Production Build
+
+```bash
+# Build erstellen
+npm run build
+
+# Build lokal testen
+npm run preview
+```
+
+## Projektstruktur
+
+```
+src/
+├── lib/
+│   ├── components/     # Svelte-Komponenten
+│   ├── stores/         # State Management (Svelte Stores)
+│   ├── data/           # Geografische Daten
+│   ├── types/          # TypeScript-Typen
+│   └── utils/          # Hilfsfunktionen
+├── assets/             # Statische Assets (SVG-Karte)
+├── App.svelte          # Hauptkomponente
+└── main.ts             # Einstiegspunkt
+
+tests/
+├── unit/               # Unit-Tests
+├── components/         # Komponenten-Tests
+└── integration/        # Integrations-Tests
+```
+
+## Verwendung
+
+1. **Modus wählen:** Wähle einen der zwei Spielmodi
+2. **Frage beantworten:** Klicke auf die Karte, um die Region zu identifizieren
+3. **Hauptstadt eingeben:** Im Länder-Modus wird die Hauptstadt abgefragt
+4. **Fortschritt verfolgen:** Deine Statistiken werden automatisch gespeichert
+
+## Einstellungen
+
+- **Timer aktivieren:** Zeitlimit für jede Frage
+- **Timer-Dauer:** Anpassbar von 10 bis 120 Sekunden
+- **Statistiken:** Zeige deine Erfolgsquoten und Verbesserungspotenziale
+- **Fortschritt zurücksetzen:** Lösche alle gespeicherten Daten
+
+## Lizenz
+
+MIT License - siehe LICENSE Datei für Details.
+
+## Mitwirken
+
+Contributions sind willkommen! Bitte öffne ein Issue oder Pull Request auf GitHub.
+
+## Credits
+
+- Kartendaten: [Quelle einfügen basierend auf verwendeter Karte]
+- Entwickelt mit Svelte und TypeScript
