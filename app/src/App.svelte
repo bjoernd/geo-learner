@@ -183,7 +183,7 @@
 
 <main>
   <header>
-    <h1>Geographie-Lernapp</h1>
+    <h1>Erdkunde</h1>
     <div class="header-actions">
       <button class="icon-button" on:click={() => (showStatistics = true)} title="Statistiken">
         📊
