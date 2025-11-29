@@ -97,6 +97,11 @@
 
   // React to prop changes for highlighting
   $: if (mapLoaded && svgElement) {
+    // Trigger update when any highlighting prop changes
+    void highlightedRegion
+    void correctRegion
+    void correctRegions
+    void incorrectRegions
     updateHighlighting()
   }
 
