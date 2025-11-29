@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store'
+import { createPersistedStore } from './createPersistedStore'
 import type { Statistics, GameSession, GameMode, ModeStatistics } from '$lib/types'
 
 const STORAGE_KEY = 'geo-learner-statistics'
@@ -21,36 +21,17 @@ const defaultStatistics: Statistics = {
 }
 
 function createStatisticsStore() {
-  const loadStatistics = (): Statistics => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) {
-        return JSON.parse(stored)
-      }
-    } catch (error) {
-      console.error('Failed to load statistics:', error)
-    }
-    return defaultStatistics
-  }
-
-  const { subscribe, set, update } = writable<Statistics>(loadStatistics())
-
-  // Save to localStorage whenever statistics change
-  subscribe((stats) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(stats))
-    } catch (error) {
-      console.error('Failed to save statistics:', error)
-    }
+  const store = createPersistedStore({
+    key: STORAGE_KEY,
+    defaultValue: defaultStatistics,
+    merge: false
   })
 
   return {
-    subscribe,
-    set,
-    update,
+    ...store,
 
     recordSession: (session: GameSession) => {
-      update(stats => {
+      store.update(stats => {
         const mode = session.mode
         const modeStats = stats.byMode[mode]
 
@@ -87,10 +68,6 @@ function createStatisticsStore() {
           weakAreas
         }
       })
-    },
-
-    reset: () => {
-      set(defaultStatistics)
     }
   }
 }

@@ -1,4 +1,5 @@
 import type { FederalState } from '$lib/types'
+import { findLocationById, findLocationByName } from './dataHelpers'
 
 export const federalStates: FederalState[] = [
   {
@@ -99,14 +100,8 @@ export const federalStates: FederalState[] = [
   }
 ]
 
-// Helper function to get state by ID
-export function getFederalStateById(id: string): FederalState | undefined {
-  return federalStates.find(state => state.id === id)
-}
+export const getFederalStateById = (id: string) =>
+  findLocationById(federalStates, id)
 
-// Helper function to get state by name
-export function getFederalStateByName(name: string): FederalState | undefined {
-  return federalStates.find(state =>
-    state.name.toLowerCase() === name.toLowerCase()
-  )
-}
+export const getFederalStateByName = (name: string) =>
+  findLocationByName(federalStates, name)

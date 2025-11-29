@@ -1,4 +1,5 @@
 import type { City } from '$lib/types'
+import { findLocationById, findLocationByName, filterLocationsByProperty } from './dataHelpers'
 
 // 26 cities: all 16 state capitals + 10 biggest non-capital cities
 export const cities: City[] = [
@@ -188,19 +189,11 @@ export const cities: City[] = [
   }
 ]
 
-// Helper function to get city by ID
-export function getCityById(id: string): City | undefined {
-  return cities.find(city => city.id === id)
-}
+export const getCityById = (id: string) =>
+  findLocationById(cities, id)
 
-// Helper function to get city by name
-export function getCityByName(name: string): City | undefined {
-  return cities.find(city =>
-    city.name.toLowerCase() === name.toLowerCase()
-  )
-}
+export const getCityByName = (name: string) =>
+  findLocationByName(cities, name)
 
-// Helper function to get all cities in a state
-export function getCitiesByStateId(stateId: string): City[] {
-  return cities.filter(city => city.stateId === stateId)
-}
+export const getCitiesByStateId = (stateId: string) =>
+  filterLocationsByProperty(cities, 'stateId', stateId)

@@ -1,4 +1,5 @@
 import type { Country } from '$lib/types'
+import { findLocationById, findLocationByName } from './dataHelpers'
 
 export const neighboringCountries: Country[] = [
   {
@@ -57,14 +58,8 @@ export const neighboringCountries: Country[] = [
   }
 ]
 
-// Helper function to get country by ID
-export function getCountryById(id: string): Country | undefined {
-  return neighboringCountries.find(country => country.id === id)
-}
+export const getCountryById = (id: string) =>
+  findLocationById(neighboringCountries, id)
 
-// Helper function to get country by name
-export function getCountryByName(name: string): Country | undefined {
-  return neighboringCountries.find(country =>
-    country.name.toLowerCase() === name.toLowerCase()
-  )
-}
+export const getCountryByName = (name: string) =>
+  findLocationByName(neighboringCountries, name)
