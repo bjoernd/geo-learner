@@ -244,15 +244,17 @@
     </div>
   {/if}
 
-  <CapitalInputModal
-    show={showCapitalModal}
-    locationName={capitalModalLocationName}
-    correctCapital={capitalModalCorrectAnswer}
-    isAnswerCorrect={capitalModalIsCorrect}
-    userAnswer={capitalModalUserAnswer}
-    on:submit={handleCapitalSubmit}
-    on:close={handleCapitalModalClose}
-  />
+  {#key currentQuestion?.location.id}
+    <CapitalInputModal
+      show={showCapitalModal}
+      locationName={capitalModalLocationName}
+      correctCapital={capitalModalCorrectAnswer}
+      isAnswerCorrect={capitalModalIsCorrect}
+      userAnswer={capitalModalUserAnswer}
+      on:submit={handleCapitalSubmit}
+      on:close={handleCapitalModalClose}
+    />
+  {/key}
 
   <Settings
     show={showSettings}

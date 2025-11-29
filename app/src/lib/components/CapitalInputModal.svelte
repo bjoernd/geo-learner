@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
+  import { createEventDispatcher, onMount } from 'svelte'
   import { fade, scale } from 'svelte/transition'
 
   export let show: boolean = false
@@ -15,14 +15,18 @@
 
   let inputValue = ''
   let inputElement: HTMLInputElement
-  let previousShow = false
 
-  $: if (show && !previousShow && inputElement) {
+  onMount(() => {
+    if (inputElement && show) {
+      inputElement.value = ''
+      inputElement.focus()
+    }
+  })
+
+  $: if (show && inputElement) {
+    inputElement.value = ''
     inputElement.focus()
-    inputValue = ''
   }
-
-  $: previousShow = show
 
   function handleSubmit() {
     if (inputValue.trim()) {
