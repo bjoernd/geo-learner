@@ -14,8 +14,7 @@ const defaultModeStats: ModeStatistics = {
 const defaultStatistics: Statistics = {
   totalSessions: 0,
   byMode: {
-    federalState: { ...defaultModeStats },
-    neighbor: { ...defaultModeStats },
+    laender: { ...defaultModeStats },
     city: { ...defaultModeStats }
   },
   weakAreas: []

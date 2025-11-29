@@ -11,13 +11,8 @@
 
   const modes: Array<{ id: GameMode; label: string; description: string }> = [
     {
-      id: 'federalState',
-      label: 'Bundesländer',
-      description: 'Lerne die 16 deutschen Bundesländer und ihre Hauptstädte'
-    },
-    {
-      id: 'neighbor',
-      label: 'Nachbarländer',
+      id: 'laender',
+      label: 'Länder',
       description: 'Bundesländer plus die 9 Nachbarländer Deutschlands'
     },
     {

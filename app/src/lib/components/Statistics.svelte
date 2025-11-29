@@ -11,8 +11,7 @@
   }>()
 
   const modeLabels: Record<GameMode, string> = {
-    federalState: 'Bundesländer',
-    neighbor: 'Nachbarländer',
+    laender: 'Länder',
     city: 'Städte'
   }
 

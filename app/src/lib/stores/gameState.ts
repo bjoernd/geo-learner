@@ -63,7 +63,7 @@ function createGameStateStore() {
 
         // If correct and mode requires capital, wait for capital input
         const needsCapital = correct &&
-                            (state.currentMode === 'federalState' || state.currentMode === 'neighbor') &&
+                            state.currentMode === 'laender' &&
                             state.currentQuestion.location.capital
 
         if (needsCapital) {
@@ -169,11 +169,7 @@ function generateQuestions(mode: GameMode): Question[] {
   let sampleSize: number
 
   switch (mode) {
-    case 'federalState':
-      locations = [...federalStates]
-      sampleSize = 10
-      break
-    case 'neighbor':
+    case 'laender':
       locations = [...federalStates, ...neighboringCountries]
       sampleSize = 10
       break

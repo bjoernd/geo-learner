@@ -21,11 +21,11 @@
 - [x] Session ends after all states
 
 ## Neighbor Mode
-- [ ] All 25 locations appear (16 states + 9 countries)
-- [ ] Can click on states
-- [ ] Can click on countries
-- [ ] Capital input works for both
-- [ ] All country capitals accepted correctly
+- [x] All 25 locations appear (16 states + 9 countries)
+- [x] Can click on states
+- [x] Can click on countries
+- [x] Capital input works for both
+- [x] All country capitals accepted correctly
 
 ## City Mode
 - [ ] All 20 cities appear as questions
@@ -36,12 +36,12 @@
 - [ ] Incorrect click shows correct location
 
 ## Map Interactions
-- [ ] Map loads correctly
-- [ ] Regions highlight on hover
-- [ ] Click feedback is immediate
-- [ ] Correct answer shows green highlight
-- [ ] Incorrect answer shows red highlight
-- [ ] Highlights clear before next question
+- [x] Map loads correctly
+- [x] Regions highlight on hover
+- [x] Click feedback is immediate
+- [x] Correct answer shows green highlight
+- [x] Incorrect answer shows red highlight
+- [x] Highlights clear before next question
 
 ## Timer (when enabled)
 - [ ] Timer appears when enabled in settings

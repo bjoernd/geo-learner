@@ -18,14 +18,14 @@ describe('Map Component', () => {
   })
 
   it('should accept mode prop', () => {
-    const { component } = render(Map, { props: { mode: 'federalState' } })
+    const { component } = render(Map, { props: { mode: 'laender' } })
     expect(component).toBeTruthy()
   })
 
   it('should accept highlightedRegion prop', () => {
     const { component } = render(Map, {
       props: {
-        mode: 'federalState',
+        mode: 'laender',
         highlightedRegion: 'DE-BY'
       }
     })

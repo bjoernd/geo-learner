@@ -11,7 +11,7 @@ describe('ScoreDisplay Component', () => {
 
   it('should render session score', () => {
     const mockSession: GameSession = {
-      mode: 'federalState',
+      mode: 'laender',
       score: 15,
       totalQuestions: 16,
       answers: [],
@@ -25,7 +25,7 @@ describe('ScoreDisplay Component', () => {
 
   it('should display percentage', () => {
     const mockSession: GameSession = {
-      mode: 'federalState',
+      mode: 'laender',
       score: 16,
       totalQuestions: 16,
       answers: [],

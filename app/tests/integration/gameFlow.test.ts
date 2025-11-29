@@ -9,12 +9,12 @@ describe('Game Flow Integration', () => {
     statistics.reset()
   })
 
-  it('should complete a full federal state session', () => {
+  it('should complete a full laender session', () => {
     // Start session
-    gameState.startNewSession('federalState')
+    gameState.startNewSession('laender')
 
     let state = get(gameState)
-    expect(state.currentMode).toBe('federalState')
+    expect(state.currentMode).toBe('laender')
     expect(state.currentQuestion).toBeTruthy()
 
     const totalQuestions = state.currentSession!.totalQuestions
@@ -45,7 +45,7 @@ describe('Game Flow Integration', () => {
     // Check statistics updated
     const stats = get(statistics)
     expect(stats.totalSessions).toBe(1)
-    expect(stats.byMode.federalState.sessionsPlayed).toBe(1)
+    expect(stats.byMode.laender.sessionsPlayed).toBe(1)
   })
 
   it('should handle incorrect answers', () => {
@@ -63,7 +63,7 @@ describe('Game Flow Integration', () => {
   })
 
   it('should handle mode switching', () => {
-    gameState.startNewSession('federalState')
+    gameState.startNewSession('laender')
     gameState.clearSession()
     gameState.startNewSession('city')
 

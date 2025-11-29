@@ -1,4 +1,4 @@
-export type GameMode = 'federalState' | 'neighbor' | 'city'
+export type GameMode = 'laender' | 'city'
 
 export interface Location {
   id: string
@@ -55,8 +55,7 @@ export interface ModeStatistics {
 export interface Statistics {
   totalSessions: number
   byMode: {
-    federalState: ModeStatistics
-    neighbor: ModeStatistics
+    laender: ModeStatistics
     city: ModeStatistics
   }
   weakAreas: Array<{ locationId: string; locationName: string; successRate: number }>

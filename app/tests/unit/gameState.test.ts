@@ -14,21 +14,13 @@ describe('Game State Store', () => {
     expect(state.currentQuestion).toBeNull()
   })
 
-  it('should start a new federal state session', () => {
-    gameState.startNewSession('federalState')
+  it('should start a new laender session', () => {
+    gameState.startNewSession('laender')
 
     const state = get(gameState)
-    expect(state.currentMode).toBe('federalState')
+    expect(state.currentMode).toBe('laender')
     expect(state.currentSession).toBeTruthy()
     expect(state.currentQuestion).toBeTruthy()
-    expect(state.currentSession!.totalQuestions).toBe(10)
-  })
-
-  it('should start a new neighbor session', () => {
-    gameState.startNewSession('neighbor')
-
-    const state = get(gameState)
-    expect(state.currentMode).toBe('neighbor')
     expect(state.currentSession!.totalQuestions).toBe(10)
   })
 
@@ -41,7 +33,7 @@ describe('Game State Store', () => {
   })
 
   it('should handle correct location answer', () => {
-    gameState.startNewSession('federalState')
+    gameState.startNewSession('laender')
     const initialQuestion = get(gameState).currentQuestion!
 
     gameState.submitLocationAnswer(initialQuestion.location.svgPathId)
@@ -52,7 +44,7 @@ describe('Game State Store', () => {
   })
 
   it('should handle incorrect location answer', () => {
-    gameState.startNewSession('federalState')
+    gameState.startNewSession('laender')
 
     gameState.submitLocationAnswer('WRONG-ID')
 
@@ -63,7 +55,7 @@ describe('Game State Store', () => {
   })
 
   it('should handle correct capital answer', () => {
-    gameState.startNewSession('federalState')
+    gameState.startNewSession('laender')
     const initialQuestion = get(gameState).currentQuestion!
 
     // Answer location correctly
@@ -78,7 +70,7 @@ describe('Game State Store', () => {
   })
 
   it('should handle capital with umlaut variations', () => {
-    gameState.startNewSession('federalState')
+    gameState.startNewSession('laender')
 
     // Find Bayern question
     let state = get(gameState)
@@ -131,7 +123,7 @@ describe('Game State Store', () => {
   })
 
   it('should clear session', () => {
-    gameState.startNewSession('federalState')
+    gameState.startNewSession('laender')
     gameState.clearSession()
 
     const state = get(gameState)
@@ -141,8 +133,8 @@ describe('Game State Store', () => {
 
   // Test derived stores
   it('should provide derived current mode', () => {
-    gameState.startNewSession('neighbor')
-    expect(get(currentMode)).toBe('neighbor')
+    gameState.startNewSession('laender')
+    expect(get(currentMode)).toBe('laender')
   })
 
   it('should provide derived current score', () => {
@@ -157,7 +149,7 @@ describe('Game State Store', () => {
   it('should provide derived session active status', () => {
     expect(get(isSessionActive)).toBe(false)
 
-    gameState.startNewSession('federalState')
+    gameState.startNewSession('laender')
     expect(get(isSessionActive)).toBe(true)
 
     gameState.clearSession()

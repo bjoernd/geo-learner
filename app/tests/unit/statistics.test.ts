@@ -30,12 +30,12 @@ describe('Statistics Store', () => {
   it('should have default statistics', () => {
     const stats = get(statistics)
     expect(stats.totalSessions).toBe(0)
-    expect(stats.byMode.federalState.sessionsPlayed).toBe(0)
+    expect(stats.byMode.laender.sessionsPlayed).toBe(0)
   })
 
   it('should record a game session', () => {
     const mockSession: GameSession = {
-      mode: 'federalState',
+      mode: 'laender',
       score: 10,
       totalQuestions: 10,
       answers: [
@@ -43,7 +43,7 @@ describe('Statistics Store', () => {
           question: {
             location: { id: 'by', name: 'Bayern', svgPathId: 'DE-BY', capital: 'München' },
             type: 'location',
-            mode: 'federalState'
+            mode: 'laender'
           },
           locationCorrect: true,
           capitalCorrect: true,
@@ -58,20 +58,20 @@ describe('Statistics Store', () => {
 
     const stats = get(statistics)
     expect(stats.totalSessions).toBe(1)
-    expect(stats.byMode.federalState.sessionsPlayed).toBe(1)
-    expect(stats.byMode.federalState.correctAnswers).toBe(2) // location + capital
+    expect(stats.byMode.laender.sessionsPlayed).toBe(1)
+    expect(stats.byMode.laender.correctAnswers).toBe(2) // location + capital
   })
 
   it('should calculate success rate', () => {
     const mockSession: GameSession = {
-      mode: 'federalState',
+      mode: 'laender',
       score: 5,
       totalQuestions: 10,
       answers: Array(10).fill(null).map((_, i) => ({
         question: {
           location: { id: 'by', name: 'Bayern', svgPathId: 'DE-BY', capital: 'München' },
           type: 'location',
-          mode: 'federalState'
+          mode: 'laender'
         },
         locationCorrect: i < 5, // 5 correct out of 10
         timestamp: Date.now()
@@ -83,12 +83,12 @@ describe('Statistics Store', () => {
     statistics.recordSession(mockSession)
 
     const stats = get(statistics)
-    expect(stats.byMode.federalState.successRate).toBe(50)
+    expect(stats.byMode.laender.successRate).toBe(50)
   })
 
   it('should track best score', () => {
     const session1: GameSession = {
-      mode: 'federalState',
+      mode: 'laender',
       score: 10,
       totalQuestions: 20,
       answers: [],
@@ -97,7 +97,7 @@ describe('Statistics Store', () => {
     }
 
     const session2: GameSession = {
-      mode: 'federalState',
+      mode: 'laender',
       score: 15,
       totalQuestions: 20,
       answers: [],
@@ -109,7 +109,7 @@ describe('Statistics Store', () => {
     statistics.recordSession(session2)
 
     const stats = get(statistics)
-    expect(stats.byMode.federalState.bestScore).toBe(15)
+    expect(stats.byMode.laender.bestScore).toBe(15)
   })
 
   it('should persist statistics to localStorage', () => {
@@ -133,7 +133,7 @@ describe('Statistics Store', () => {
 
   it('should reset statistics', () => {
     const mockSession: GameSession = {
-      mode: 'federalState',
+      mode: 'laender',
       score: 10,
       totalQuestions: 10,
       answers: [],
@@ -146,6 +146,6 @@ describe('Statistics Store', () => {
 
     const stats = get(statistics)
     expect(stats.totalSessions).toBe(0)
-    expect(stats.byMode.federalState.sessionsPlayed).toBe(0)
+    expect(stats.byMode.laender.sessionsPlayed).toBe(0)
   })
 })
