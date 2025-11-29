@@ -17,9 +17,9 @@ This is a geography learning web application for teaching German federal states,
 
 ### Three Game Modes
 
-1. **Federal State Mode:** Click German states on map, then answer capital names
-2. **Neighbor Mode:** Extended version including 9 neighboring countries + capitals
-3. **City Mode:** Click locations of German cities on map
+1. **Federal State Mode:** Click German states on map, then answer capital names (10 random questions per session)
+2. **Neighbor Mode:** Extended version including 9 neighboring countries + capitals (10 random questions per session)
+3. **City Mode:** Click locations of German cities on map (15 random questions per session)
 
 ### Tech Stack
 
@@ -73,7 +73,8 @@ npm run test:ui
 
 ## Testing
 
-- Test files: `tests/unit/` for unit tests, `tests/components/` for component tests
+- Test files: `tests/unit/` for unit tests, `tests/components/` for component tests, `tests/integration/` for integration tests
+- Manual testing checklist: `app/TESTING_CHECKLIST.md`
 - Test setup: `tests/setup.ts` configures jsdom environment
 - Tests use Vitest with @testing-library/svelte
 - Global test utilities are available (globals: true in vitest config)
@@ -90,11 +91,11 @@ npm run test:ui
 - Must support common spelling variations (e.g., "München"/"Munchen")
 - Implementation in `src/lib/utils/textMatching.ts`
 
-### Data Requirements
-- 16 German federal states with capitals
-- 9 neighboring countries with capitals
-- 50+ German cities (includes all state capitals + major cities)
-- See SPECIFICATION.md lines 136-190 for complete lists
+### Data Requirements and Question Sampling
+- Data includes 16 German federal states with capitals, 9 neighboring countries with capitals, and 50+ German cities
+- Sessions use random sampling: Federal State mode (10 questions), Neighbor mode (10 questions), City mode (15 questions)
+- Each session randomly selects from available data to keep gameplay fresh and sessions manageable
+- See SPECIFICATION.md lines 136-190 for complete data lists
 
 ### Timer Feature (Optional)
 - Configurable via settings
