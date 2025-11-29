@@ -9,6 +9,7 @@
   export let incorrectClickPosition: { x: number; y: number } | null = null
   export let correctRegions: string[] = [] // Permanently highlighted correct regions
   export let incorrectRegions: string[] = [] // Permanently highlighted incorrect regions
+  export let cityFeedbackItems: Array<{ coordinates: { x: number; y: number }; isCorrect: boolean }> = []
 
   const dispatch = createEventDispatcher<{
     regionClick: { regionId: string; svgPathId: string }
@@ -20,6 +21,7 @@
   let mapLoaded = false
   let cursorCircle: SVGCircleElement | null = null
   let mousePosition: { svgX: number; svgY: number } | null = null
+  let cityFeedbackGroup: SVGGElement | null = null
 
   const CITY_CLICK_THRESHOLD = 30 // pixels - must match gameState.ts
 
@@ -62,6 +64,9 @@
 
     // Create cursor circle for city mode
     createCursorCircle()
+
+    // Create city feedback group
+    createCityFeedbackGroup()
   }
 
   function createCursorCircle() {
@@ -71,6 +76,12 @@
     cursorCircle.style.pointerEvents = 'none'
     svgElement.appendChild(cursorCircle)
     updateCursorVisibility()
+  }
+
+  function createCityFeedbackGroup() {
+    cityFeedbackGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+    cityFeedbackGroup.setAttribute('id', 'city-feedback-group')
+    svgElement.appendChild(cityFeedbackGroup)
   }
 
   function handleMouseMove(event: MouseEvent) {
@@ -165,6 +176,33 @@
   $: if (mapLoaded && cursorCircle) {
     void mode
     updateCursorVisibility()
+  }
+
+  // React to cityFeedbackItems changes
+  $: if (mapLoaded && cityFeedbackGroup) {
+    void cityFeedbackItems
+    updateCityFeedbackItems()
+  }
+
+  function updateCityFeedbackItems() {
+    if (!cityFeedbackGroup) return
+
+    // Clear existing circles
+    cityFeedbackGroup.innerHTML = ''
+
+    // Add a circle for each feedback item
+    cityFeedbackItems.forEach((item) => {
+      if (!cityFeedbackGroup) return
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+      circle.setAttribute('cx', item.coordinates.x.toString())
+      circle.setAttribute('cy', item.coordinates.y.toString())
+      circle.setAttribute('r', '12')
+      circle.classList.add('city-feedback-circle')
+      circle.classList.add(item.isCorrect ? 'correct' : 'incorrect')
+      circle.style.pointerEvents = 'none'
+      cityFeedbackGroup.appendChild(circle)
+    })
   }
 
   function updateHighlighting() {
@@ -288,5 +326,18 @@
   /* In city mode, disable region clicks so clicks go to map handler */
   .map-container.city-mode :global(.clickable-region) {
     pointer-events: none;
+  }
+
+  .map-container :global(.city-feedback-circle) {
+    stroke: white;
+    stroke-width: 3;
+  }
+
+  .map-container :global(.city-feedback-circle.correct) {
+    fill: #4CAF50;
+  }
+
+  .map-container :global(.city-feedback-circle.incorrect) {
+    fill: #f44336;
   }
 </style>

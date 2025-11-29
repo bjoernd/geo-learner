@@ -33,6 +33,7 @@
   // Map highlighting
   let highlightedRegion: string | null = null
   let correctRegionHighlight: string | null = null
+  let cityFeedbackItems: Array<{ coordinates: { x: number; y: number }; isCorrect: boolean }> = []
 
   $: {
     // Show capital modal when awaiting input
@@ -53,6 +54,7 @@
 
     gameState.startNewSession(event.detail.mode)
     resetMapHighlights()
+    cityFeedbackItems = [] // Clear city feedback for new session
     if (timerComponent) {
       timerComponent.reset()
     }
@@ -79,14 +81,21 @@
     const clickPosition = { x: event.detail.svgX, y: event.detail.svgY }
     gameState.submitLocationAnswer(null, clickPosition)
 
-    if (lastAnswerCorrect === false) {
-      showIncorrectFeedback()
-    } else {
-      // Move to next question after brief delay
+    // Wait for reactive state to update, then add feedback
+    setTimeout(() => {
+      // Add city feedback marker to the permanent list
+      if (correctLocation && 'coordinates' in correctLocation) {
+        cityFeedbackItems = [...cityFeedbackItems, {
+          coordinates: (correctLocation as any).coordinates,
+          isCorrect: lastAnswerCorrect === true
+        }]
+      }
+
+      // Move to next question after showing feedback
       setTimeout(() => {
         resetMapHighlights()
-      }, 1000)
-    }
+      }, lastAnswerCorrect ? 1000 : 2000)
+    }, 0)
   }
 
   function handleCapitalSubmit(event: CustomEvent<{ answer: string }>) {
@@ -239,6 +248,7 @@
           correctRegion={correctRegionHighlight}
           correctRegions={$answeredRegions.correct}
           incorrectRegions={$answeredRegions.incorrect}
+          cityFeedbackItems={cityFeedbackItems}
           on:regionClick={handleRegionClick}
           on:mapClick={handleMapClick}
         />
