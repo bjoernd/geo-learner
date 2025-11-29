@@ -232,11 +232,7 @@
           </div>
         {/if}
 
-        <button class="end-session-button" on:click={() => {
-          if (confirm('Sitzung beenden?')) {
-            gameState.endSession()
-          }
-        }}>
+        <button class="end-session-button" on:click={() => gameState.endSession()}>
           Sitzung beenden
         </button>
       </div>
