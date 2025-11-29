@@ -5,10 +5,7 @@ An interactive geography learning application for studying German federal states
 ## Game Modes
 
 **Federal State Mode**
-Learn the 16 German federal states and their capitals. Click each state on the map, then type its capital name. 10 random questions per session.
-
-**Neighbor Mode**
-Extended version including Germany's 9 neighboring countries. Learn both German states and neighboring countries with their capitals. 10 random questions per session.
+Learn the 16 German federal states, 9 neighboring states, and their capitals. Click each state on the map, then type its capital name. 10 random questions per session.
 
 **City Mode**
 Learn locations of 50+ major German cities by clicking their positions on the map. 15 random questions per session.
