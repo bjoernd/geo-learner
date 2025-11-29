@@ -96,15 +96,16 @@
     // Submit answer to game state
     gameState.submitCapitalAnswer(userAnswer)
 
-    // Show feedback
-    capitalModalIsCorrect = lastAnswerCorrect
+    // Show feedback - get updated state after submission
+    const updatedState = $gameState
+    capitalModalIsCorrect = updatedState.lastAnswerCorrect
 
     // After showing feedback, close modal and continue
     setTimeout(() => {
       showCapitalModal = false
       capitalModalIsCorrect = null
 
-      if (lastAnswerCorrect === false) {
+      if (updatedState.lastAnswerCorrect === false) {
         showIncorrectFeedback()
       } else {
         resetMapHighlights()

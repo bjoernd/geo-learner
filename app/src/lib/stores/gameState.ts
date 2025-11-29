@@ -166,21 +166,25 @@ function moveToNextQuestion(state: GameState): GameState {
 
 function generateQuestions(mode: GameMode): Question[] {
   let locations: Location[] = []
+  let sampleSize: number
 
   switch (mode) {
     case 'federalState':
       locations = [...federalStates]
+      sampleSize = 10
       break
     case 'neighbor':
       locations = [...federalStates, ...neighboringCountries]
+      sampleSize = 10
       break
     case 'city':
       locations = [...cities]
+      sampleSize = 15
       break
   }
 
-  // Shuffle locations
-  locations = shuffle(locations)
+  // Shuffle and sample locations
+  locations = shuffle(locations).slice(0, sampleSize)
 
   // Create questions
   const questions: Question[] = locations.map(location => ({

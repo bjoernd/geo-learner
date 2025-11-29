@@ -21,7 +21,7 @@ describe('Game State Store', () => {
     expect(state.currentMode).toBe('federalState')
     expect(state.currentSession).toBeTruthy()
     expect(state.currentQuestion).toBeTruthy()
-    expect(state.currentSession!.totalQuestions).toBe(16)
+    expect(state.currentSession!.totalQuestions).toBe(10)
   })
 
   it('should start a new neighbor session', () => {
@@ -29,7 +29,7 @@ describe('Game State Store', () => {
 
     const state = get(gameState)
     expect(state.currentMode).toBe('neighbor')
-    expect(state.currentSession!.totalQuestions).toBe(25) // 16 states + 9 countries
+    expect(state.currentSession!.totalQuestions).toBe(10)
   })
 
   it('should start a new city session', () => {
@@ -37,7 +37,7 @@ describe('Game State Store', () => {
 
     const state = get(gameState)
     expect(state.currentMode).toBe('city')
-    expect(state.currentSession!.totalQuestions).toBe(20) // 20 cities
+    expect(state.currentSession!.totalQuestions).toBe(15)
   })
 
   it('should handle correct location answer', () => {

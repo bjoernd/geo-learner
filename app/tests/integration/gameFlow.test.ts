@@ -69,6 +69,6 @@ describe('Game Flow Integration', () => {
 
     const state = get(gameState)
     expect(state.currentMode).toBe('city')
-    expect(state.currentSession!.totalQuestions).toBe(20)
+    expect(state.currentSession!.totalQuestions).toBe(15)
   })
 })
