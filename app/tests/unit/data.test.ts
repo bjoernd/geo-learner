@@ -85,8 +85,8 @@ describe('Neighboring Countries Data', () => {
 })
 
 describe('Cities Data', () => {
-  it('should have exactly 20 cities', () => {
-    expect(cities).toHaveLength(20)
+  it('should have exactly 26 cities', () => {
+    expect(cities).toHaveLength(26)
   })
 
   it('should have all required fields for each city', () => {

@@ -1,7 +1,6 @@
 import type { City } from '$lib/types'
 
-// Starting with 20 cities: all 16 state capitals + 4 major cities
-// Coordinates are placeholders - will be updated when we have the actual SVG map
+// 26 cities: all 16 state capitals + 10 biggest non-capital cities
 export const cities: City[] = [
   // State capitals
   {
@@ -9,141 +8,183 @@ export const cities: City[] = [
     name: 'Stuttgart',
     stateId: 'bw',
     svgPathId: 'city-stuttgart',
-    coordinates: { x: 500, y: 650 }
+    coordinates: { x: 405, y: 1023.01 }
   },
   {
     id: 'muenchen',
     name: 'München',
     stateId: 'by',
     svgPathId: 'city-muenchen',
-    coordinates: { x: 650, y: 700 }
+    coordinates: { x: 713, y: 1144.01 }
   },
   {
     id: 'berlin',
     name: 'Berlin',
     stateId: 'be',
     svgPathId: 'city-berlin',
-    coordinates: { x: 700, y: 300 }
+    coordinates: { x: 844, y: 416.01 }
   },
   {
     id: 'potsdam',
     name: 'Potsdam',
     stateId: 'bb',
     svgPathId: 'city-potsdam',
-    coordinates: { x: 680, y: 310 }
+    coordinates: { x: 815, y: 437.01 }
   },
   {
     id: 'bremen',
     name: 'Bremen',
     stateId: 'hb',
     svgPathId: 'city-bremen',
-    coordinates: { x: 450, y: 250 }
+    coordinates: { x: 350, y: 320 }
   },
   {
     id: 'hamburg',
     name: 'Hamburg',
     stateId: 'hh',
     svgPathId: 'city-hamburg',
-    coordinates: { x: 500, y: 200 }
+    coordinates: { x: 486, y: 249 }
   },
   {
     id: 'wiesbaden',
     name: 'Wiesbaden',
     stateId: 'he',
     svgPathId: 'city-wiesbaden',
-    coordinates: { x: 420, y: 500 }
+    coordinates: { x: 294, y: 811.01 }
   },
   {
     id: 'schwerin',
     name: 'Schwerin',
     stateId: 'mv',
     svgPathId: 'city-schwerin',
-    coordinates: { x: 600, y: 200 }
+    coordinates: { x: 635, y: 237 }
   },
   {
     id: 'hannover',
     name: 'Hannover',
     stateId: 'ni',
     svgPathId: 'city-hannover',
-    coordinates: { x: 500, y: 320 }
+    coordinates: { x: 437, y: 426.01 }
   },
   {
     id: 'duesseldorf',
     name: 'Düsseldorf',
     stateId: 'nw',
     svgPathId: 'city-duesseldorf',
-    coordinates: { x: 350, y: 420 }
+    coordinates: { x: 125, y: 618.01 }
   },
   {
     id: 'mainz',
     name: 'Mainz',
     stateId: 'rp',
     svgPathId: 'city-mainz',
-    coordinates: { x: 420, y: 520 }
+    coordinates: { x: 288, y: 821.01 }
   },
   {
     id: 'saarbruecken',
     name: 'Saarbrücken',
     stateId: 'sl',
     svgPathId: 'city-saarbruecken',
-    coordinates: { x: 350, y: 600 }
+    coordinates: { x: 147, y: 945.01 }
   },
   {
     id: 'dresden',
     name: 'Dresden',
     stateId: 'sn',
     svgPathId: 'city-dresden',
-    coordinates: { x: 700, y: 450 }
+    coordinates: { x: 898.01, y: 653.01 }
   },
   {
     id: 'magdeburg',
     name: 'Magdeburg',
     stateId: 'st',
     svgPathId: 'city-magdeburg',
-    coordinates: { x: 600, y: 330 }
+    coordinates: { x: 659, y: 478.01 }
   },
   {
     id: 'kiel',
     name: 'Kiel',
     stateId: 'sh',
     svgPathId: 'city-kiel',
-    coordinates: { x: 500, y: 120 }
+    coordinates: { x: 496, y: 125 }
   },
   {
     id: 'erfurt',
     name: 'Erfurt',
     stateId: 'th',
     svgPathId: 'city-erfurt',
-    coordinates: { x: 550, y: 450 }
+    coordinates: { x: 587, y: 657.01 }
   },
   // Major cities (non-capitals)
-  {
-    id: 'frankfurt',
-    name: 'Frankfurt am Main',
-    stateId: 'he',
-    svgPathId: 'city-frankfurt',
-    coordinates: { x: 450, y: 500 }
-  },
   {
     id: 'koeln',
     name: 'Köln',
     stateId: 'nw',
     svgPathId: 'city-koeln',
-    coordinates: { x: 350, y: 450 }
+    coordinates: { x: 137, y: 625.01 }
+  },
+  {
+    id: 'frankfurt',
+    name: 'Frankfurt am Main',
+    stateId: 'he',
+    svgPathId: 'city-frankfurt',
+    coordinates: { x: 337, y: 803.01 }
+  },
+  {
+    id: 'dortmund',
+    name: 'Dortmund',
+    stateId: 'nw',
+    svgPathId: 'city-dortmund',
+    coordinates: { x: 204, y: 574.01 }
+  },
+  {
+    id: 'essen',
+    name: 'Essen',
+    stateId: 'nw',
+    svgPathId: 'city-essen',
+    coordinates: { x: 156, y: 577.01 }
   },
   {
     id: 'leipzig',
     name: 'Leipzig',
     stateId: 'sn',
     svgPathId: 'city-leipzig',
-    coordinates: { x: 650, y: 400 }
+    coordinates: { x: 742, y: 597.01 }
   },
   {
     id: 'nuernberg',
     name: 'Nürnberg',
     stateId: 'by',
     svgPathId: 'city-nuernberg',
-    coordinates: { x: 550, y: 600 }
+    coordinates: { x: 599, y: 891.01 }
+  },
+  {
+    id: 'duisburg',
+    name: 'Duisburg',
+    stateId: 'nw',
+    svgPathId: 'city-duisburg',
+    coordinates: { x: 131, y: 567.01 }
+  },
+  {
+    id: 'bochum',
+    name: 'Bochum',
+    stateId: 'nw',
+    svgPathId: 'city-bochum',
+    coordinates: { x: 184, y: 575.01 }
+  },
+  {
+    id: 'wuppertal',
+    name: 'Wuppertal',
+    stateId: 'nw',
+    svgPathId: 'city-wuppertal',
+    coordinates: { x: 151, y: 614.01 }
+  },
+  {
+    id: 'bielefeld',
+    name: 'Bielefeld',
+    stateId: 'nw',
+    svgPathId: 'city-bielefeld',
+    coordinates: { x: 316, y: 486.01 }
   }
 ]
 
