@@ -15,6 +15,8 @@
 
   let inputValue = ''
   let inputElement: HTMLInputElement
+  let continueButton: HTMLButtonElement
+  let lastSubmitTime = 0
 
   onMount(() => {
     if (inputElement && show) {
@@ -26,17 +28,32 @@
   $: if (show && inputElement) {
     inputElement.value = ''
     inputElement.focus()
+    lastSubmitTime = 0
+  }
+
+  $: if (isAnswerCorrect !== null && continueButton) {
+    setTimeout(() => continueButton?.focus(), 350)
   }
 
   function handleSubmit() {
     if (inputValue.trim()) {
+      lastSubmitTime = Date.now()
       dispatch('submit', { answer: inputValue.trim() })
     }
   }
 
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
-      handleSubmit()
+      event.stopPropagation()
+      // If feedback is shown, close the modal
+      if (isAnswerCorrect !== null) {
+        const timeSinceSubmit = Date.now() - lastSubmitTime
+        if (timeSinceSubmit > 300) {
+          handleClose()
+        }
+      } else {
+        handleSubmit()
+      }
     } else if (event.key === 'Escape') {
       dispatch('close')
     }
@@ -55,6 +72,14 @@
   function handleContentKeydown(event: KeyboardEvent) {
     // Stop propagation to prevent overlay from handling
     event.stopPropagation()
+
+    // Allow Enter to close when feedback is shown, but not immediately after submission
+    if (event.key === 'Enter' && isAnswerCorrect !== null) {
+      const timeSinceSubmit = Date.now() - lastSubmitTime
+      if (timeSinceSubmit > 300) {
+        handleClose()
+      }
+    }
   }
 </script>
 
@@ -72,7 +97,9 @@
       class="modal-content"
       transition:scale={{ duration: 200, start: 0.9 }}
       onclick={(e) => e.stopPropagation()}
+      onkeydown={handleContentKeydown}
       role="presentation"
+      tabindex="-1"
     >
       <h2>Hauptstadt von {locationName}?</h2>
 
@@ -105,7 +132,7 @@
             <div class="user-answer">Deine Antwort: {userAnswer}</div>
           {/if}
         </div>
-        <button onclick={handleClose} class="continue-button">
+        <button bind:this={continueButton} onclick={handleClose} class="continue-button">
           Weiter
         </button>
       {/if}
