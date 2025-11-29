@@ -3,11 +3,8 @@
   import { createEventDispatcher } from 'svelte'
   import type { GameMode } from '$lib/types'
 
-  export let mode: GameMode | null = null // Used for city mode (to be implemented)
+  export let mode: GameMode | null = null
   export let highlightedRegion: string | null = null
-
-  // Suppress unused warning - mode will be used when city mode is implemented
-  $: void mode
   export let correctRegion: string | null = null
   export let incorrectClickPosition: { x: number; y: number } | null = null
   export let correctRegions: string[] = [] // Permanently highlighted correct regions
@@ -21,6 +18,10 @@
   let svgElement: SVGSVGElement
   let mapContainer: HTMLDivElement
   let mapLoaded = false
+  let cursorCircle: SVGCircleElement | null = null
+  let mousePosition: { svgX: number; svgY: number } | null = null
+
+  const CITY_CLICK_THRESHOLD = 30 // pixels - must match gameState.ts
 
   onMount(async () => {
     try {
@@ -53,6 +54,61 @@
 
     // Also handle clicks on the SVG itself (for city mode)
     svgElement.addEventListener('click', handleSvgClick)
+
+    // Add mouse move handler for city mode cursor
+    svgElement.addEventListener('mousemove', handleMouseMove)
+    svgElement.addEventListener('mouseenter', handleMouseEnter)
+    svgElement.addEventListener('mouseleave', handleMouseLeave)
+
+    // Create cursor circle for city mode
+    createCursorCircle()
+  }
+
+  function createCursorCircle() {
+    cursorCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+    cursorCircle.setAttribute('r', CITY_CLICK_THRESHOLD.toString())
+    cursorCircle.classList.add('city-cursor-circle')
+    cursorCircle.style.pointerEvents = 'none'
+    svgElement.appendChild(cursorCircle)
+    updateCursorVisibility()
+  }
+
+  function handleMouseMove(event: MouseEvent) {
+    if (mode !== 'city') return
+
+    const pt = svgElement.createSVGPoint()
+    pt.x = event.clientX
+    pt.y = event.clientY
+    const svgP = pt.matrixTransform(svgElement.getScreenCTM()!.inverse())
+
+    mousePosition = { svgX: svgP.x, svgY: svgP.y }
+    updateCursorPosition()
+  }
+
+  function handleMouseEnter() {
+    if (mode === 'city' && cursorCircle) {
+      cursorCircle.style.display = 'block'
+    }
+  }
+
+  function handleMouseLeave() {
+    if (cursorCircle) {
+      cursorCircle.style.display = 'none'
+    }
+    mousePosition = null
+  }
+
+  function updateCursorPosition() {
+    if (cursorCircle && mousePosition) {
+      cursorCircle.setAttribute('cx', mousePosition.svgX.toString())
+      cursorCircle.setAttribute('cy', mousePosition.svgY.toString())
+    }
+  }
+
+  function updateCursorVisibility() {
+    if (cursorCircle) {
+      cursorCircle.style.display = mode === 'city' ? 'block' : 'none'
+    }
   }
 
   function handleRegionClick(event: Event) {
@@ -105,6 +161,12 @@
     updateHighlighting()
   }
 
+  // React to mode changes for cursor visibility
+  $: if (mapLoaded && cursorCircle) {
+    void mode
+    updateCursorVisibility()
+  }
+
   function updateHighlighting() {
     // Remove all existing highlights
     svgElement.querySelectorAll('.clickable-region').forEach(region => {
@@ -142,7 +204,7 @@
   }
 </script>
 
-<div class="map-container" bind:this={mapContainer}>
+<div class="map-container" class:city-mode={mode === 'city'} bind:this={mapContainer}>
   {#if !mapLoaded}
     <div class="loading">Karte wird geladen...</div>
   {/if}
@@ -213,5 +275,18 @@
   .loading {
     font-size: 1.2rem;
     color: #666;
+  }
+
+  .map-container :global(.city-cursor-circle) {
+    fill: rgba(33, 150, 243, 0.15);
+    stroke: #2196F3;
+    stroke-width: 2;
+    stroke-dasharray: 5, 5;
+    display: none;
+  }
+
+  /* In city mode, disable region clicks so clicks go to map handler */
+  .map-container.city-mode :global(.clickable-region) {
+    pointer-events: none;
   }
 </style>

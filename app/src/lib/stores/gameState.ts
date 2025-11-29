@@ -58,9 +58,14 @@ function createGameStateStore() {
       update(state => {
         if (!state.currentQuestion || !state.currentSession) return state
 
-        const correct = clickedRegionId === state.currentQuestion.location.svgPathId ||
-                       (state.currentQuestion.mode === 'city' && clickPosition !== undefined &&
-                        isClickNearCity(clickPosition, state.currentQuestion.location as any))
+        // For city mode, check if click is near the city
+        let correct = false
+        if (state.currentQuestion.mode === 'city' && clickPosition !== undefined) {
+          const city = state.currentQuestion.location as any
+          correct = isClickNearCity(clickPosition, city)
+        } else if (clickedRegionId !== null) {
+          correct = clickedRegionId === state.currentQuestion.location.svgPathId
+        }
 
         const answer: Partial<Answer> = {
           question: state.currentQuestion,
