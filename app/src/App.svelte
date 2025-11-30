@@ -75,8 +75,8 @@
   }
 
   function handleMapClick(event: CustomEvent<{ x: number; y: number; svgX: number; svgY: number }>) {
-    // For city mode, handle clicks on the map
-    if (!$isSessionActive || currentMode !== 'city' || awaitingCapitalInput) return
+    // For orte mode, handle clicks on the map
+    if (!$isSessionActive || currentMode !== 'orte' || awaitingCapitalInput) return
 
     const clickPosition = { x: event.detail.svgX, y: event.detail.svgY }
     gameState.submitLocationAnswer(null, clickPosition)

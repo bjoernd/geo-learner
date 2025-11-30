@@ -54,15 +54,23 @@
       region.addEventListener('mouseleave', handleRegionUnhover)
     })
 
+    // Add handlers to river paths
+    const riverPaths = svgElement.querySelectorAll('.river-path')
+    riverPaths.forEach(path => {
+      path.addEventListener('click', handleRiverClick)
+      path.addEventListener('mouseenter', handleRiverHover)
+      path.addEventListener('mouseleave', handleRiverUnhover)
+    })
+
     // Also handle clicks on the SVG itself (for city mode)
     svgElement.addEventListener('click', handleSvgClick)
 
-    // Add mouse move handler for city mode cursor
+    // Add mouse move handler for orte mode cursor
     svgElement.addEventListener('mousemove', handleMouseMove)
     svgElement.addEventListener('mouseenter', handleMouseEnter)
     svgElement.addEventListener('mouseleave', handleMouseLeave)
 
-    // Create cursor circle for city mode
+    // Create cursor circle for orte mode
     createCursorCircle()
 
     // Create city feedback group
@@ -85,7 +93,7 @@
   }
 
   function handleMouseMove(event: MouseEvent) {
-    if (mode !== 'city') return
+    if (mode !== 'orte') return
 
     const pt = svgElement.createSVGPoint()
     pt.x = event.clientX
@@ -97,7 +105,7 @@
   }
 
   function handleMouseEnter() {
-    if (mode === 'city' && cursorCircle) {
+    if (mode === 'orte' && cursorCircle) {
       cursorCircle.style.display = 'block'
     }
   }
@@ -118,7 +126,7 @@
 
   function updateCursorVisibility() {
     if (cursorCircle) {
-      cursorCircle.style.display = mode === 'city' ? 'block' : 'none'
+      cursorCircle.style.display = mode === 'orte' ? 'block' : 'none'
     }
   }
 
@@ -158,6 +166,27 @@
   }
 
   function handleRegionUnhover(event: Event) {
+    const target = event.target as SVGPathElement
+    target.classList.remove('hovered')
+  }
+
+  function handleRiverClick(event: Event) {
+    event.stopPropagation()
+    const target = event.target as SVGPathElement
+    const riverId = target.id
+
+    dispatch('regionClick', {
+      regionId: riverId,
+      svgPathId: riverId
+    })
+  }
+
+  function handleRiverHover(event: Event) {
+    const target = event.target as SVGPathElement
+    target.classList.add('hovered')
+  }
+
+  function handleRiverUnhover(event: Event) {
     const target = event.target as SVGPathElement
     target.classList.remove('hovered')
   }
@@ -206,12 +235,17 @@
   }
 
   function updateHighlighting() {
-    // Remove all existing highlights
+    // Remove all existing highlights from regions
     svgElement.querySelectorAll('.clickable-region').forEach(region => {
       region.classList.remove('highlighted', 'correct', 'incorrect', 'permanent-correct', 'permanent-incorrect')
     })
 
-    // Apply permanent highlighting for answered regions
+    // Remove all existing highlights from river paths
+    svgElement.querySelectorAll('.river-path').forEach(path => {
+      path.classList.remove('highlighted', 'correct', 'incorrect', 'permanent-correct', 'permanent-incorrect')
+    })
+
+    // Apply permanent highlighting for answered regions/rivers
     correctRegions.forEach(regionId => {
       const region = svgElement.querySelector(`#${regionId}`)
       region?.classList.add('permanent-correct')
@@ -242,7 +276,7 @@
   }
 </script>
 
-<div class="map-container" class:city-mode={mode === 'city'} bind:this={mapContainer}>
+<div class="map-container" class:orte-mode={mode === 'orte'} bind:this={mapContainer}>
   {#if !mapLoaded}
     <div class="loading">Karte wird geladen...</div>
   {/if}
@@ -323,8 +357,8 @@
     display: none;
   }
 
-  /* In city mode, disable region clicks so clicks go to map handler */
-  .map-container.city-mode :global(.clickable-region) {
+  /* In orte mode, disable region clicks so clicks go to map handler */
+  .map-container.orte-mode :global(.clickable-region) {
     pointer-events: none;
   }
 
@@ -339,5 +373,42 @@
 
   .map-container :global(.city-feedback-circle.incorrect) {
     fill: #f44336;
+  }
+
+  /* River path styling */
+  .map-container :global(.river-path) {
+    fill: none;
+    stroke: #2196F3;
+    stroke-width: 2;
+    cursor: pointer;
+    transition: stroke-width 0.2s ease;
+  }
+
+  .map-container :global(.river-path:hover),
+  .map-container :global(.river-path.hovered) {
+    stroke: #FFC107;
+    stroke-width: 4;
+  }
+
+  .map-container :global(.river-path.correct) {
+    stroke: #66bb6a;
+    stroke-width: 4;
+    animation: pulse-correct 0.5s ease;
+  }
+
+  .map-container :global(.river-path.incorrect) {
+    stroke: #ef5350;
+    stroke-width: 4;
+    animation: pulse-incorrect 0.5s ease;
+  }
+
+  .map-container :global(.river-path.permanent-correct) {
+    stroke: #66bb6a;
+    stroke-width: 3;
+  }
+
+  .map-container :global(.river-path.permanent-incorrect) {
+    stroke: #ef5350;
+    stroke-width: 3;
   }
 </style>

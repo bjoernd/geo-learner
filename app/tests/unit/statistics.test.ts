@@ -114,7 +114,7 @@ describe('Statistics Store', () => {
 
   it('should persist statistics to localStorage', () => {
     const mockSession: GameSession = {
-      mode: 'city',
+      mode: 'orte',
       score: 5,
       totalQuestions: 10,
       answers: [],

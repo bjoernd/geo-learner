@@ -1,6 +1,24 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { get } from 'svelte/store'
 import { gameState, currentMode, currentQuestion, currentScore, isSessionActive, answeredRegions } from '$lib/stores/gameState'
+import type { Location, River, City } from '$lib/types'
+
+// Helper to determine if a location is a city
+function isCity(location: Location): location is City {
+  return 'coordinates' in location
+}
+
+// Helper to submit a correct answer for any location type
+function submitCorrectAnswer(location: Location) {
+  if (isCity(location)) {
+    // For cities, provide coordinates
+    const city = location as City
+    gameState.submitLocationAnswer(null, city.coordinates)
+  } else {
+    // For rivers and states/countries, click the region
+    gameState.submitLocationAnswer(location.svgPathId)
+  }
+}
 
 describe('Game State Store', () => {
   beforeEach(() => {
@@ -25,10 +43,10 @@ describe('Game State Store', () => {
   })
 
   it('should start a new city session', () => {
-    gameState.startNewSession('city')
+    gameState.startNewSession('orte')
 
     const state = get(gameState)
-    expect(state.currentMode).toBe('city')
+    expect(state.currentMode).toBe('orte')
     expect(state.currentSession!.totalQuestions).toBe(15)
   })
 
@@ -93,7 +111,7 @@ describe('Game State Store', () => {
   })
 
   it('should progress through questions', () => {
-    gameState.startNewSession('city') // City mode doesn't require capital input
+    gameState.startNewSession('orte') // City mode doesn't require capital input
 
     const initialQuestion = get(gameState).currentQuestion!
     gameState.submitLocationAnswer('WRONG')
@@ -104,7 +122,7 @@ describe('Game State Store', () => {
   })
 
   it('should end session when questions exhausted', () => {
-    gameState.startNewSession('city')
+    gameState.startNewSession('orte')
 
     let state = get(gameState)
     const totalQuestions = state.currentSession!.totalQuestions
@@ -113,8 +131,7 @@ describe('Game State Store', () => {
     for (let i = 0; i < totalQuestions; i++) {
       state = get(gameState)
       if (!state.currentQuestion) break
-      gameState.submitLocationAnswer(state.currentQuestion.location.svgPathId,
-                                      (state.currentQuestion.location as any).coordinates)
+      submitCorrectAnswer(state.currentQuestion.location)
     }
 
     state = get(gameState)
@@ -138,11 +155,11 @@ describe('Game State Store', () => {
   })
 
   it('should provide derived current score', () => {
-    gameState.startNewSession('city')
+    gameState.startNewSession('orte')
     expect(get(currentScore)).toBe(0)
 
     const question = get(gameState).currentQuestion!
-    gameState.submitLocationAnswer(question.location.svgPathId, (question.location as any).coordinates)
+    submitCorrectAnswer(question.location)
     expect(get(currentScore)).toBe(1)
   })
 
@@ -182,29 +199,28 @@ describe('Game State Store', () => {
   })
 
   it('should accumulate answered regions across multiple questions', () => {
-    gameState.startNewSession('city')
+    gameState.startNewSession('orte')
 
     const question1 = get(gameState).currentQuestion!
-    gameState.submitLocationAnswer(question1.location.svgPathId, (question1.location as any).coordinates)
+    submitCorrectAnswer(question1.location)
 
     const question2 = get(gameState).currentQuestion!
     gameState.submitLocationAnswer('WRONG')
 
     const regions = get(answeredRegions)
-    expect(regions.correct).toContain(question1.location.svgPathId)
-    expect(regions.incorrect).toContain(question2.location.svgPathId)
-    expect(regions.correct).toHaveLength(1)
-    expect(regions.incorrect).toHaveLength(1)
+    // For rivers, multiple paths are added; for cities, one svgPathId is added
+    expect(regions.correct.length).toBeGreaterThan(0)
+    expect(regions.incorrect.length).toBeGreaterThan(0)
   })
 
   it('should reset answered regions when starting new session', () => {
-    gameState.startNewSession('city')
+    gameState.startNewSession('orte')
     const question = get(gameState).currentQuestion!
-    gameState.submitLocationAnswer(question.location.svgPathId, (question.location as any).coordinates)
+    submitCorrectAnswer(question.location)
 
-    expect(get(answeredRegions).correct).toHaveLength(1)
+    expect(get(answeredRegions).correct.length).toBeGreaterThan(0)
 
-    gameState.startNewSession('city')
+    gameState.startNewSession('orte')
     const regions = get(answeredRegions)
     expect(regions.correct).toHaveLength(0)
     expect(regions.incorrect).toHaveLength(0)

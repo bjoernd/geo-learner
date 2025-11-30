@@ -1,4 +1,4 @@
-export type GameMode = 'laender' | 'city'
+export type GameMode = 'laender' | 'orte'
 
 export interface Location {
   id: string
@@ -20,10 +20,8 @@ export interface City extends Location {
   coordinates: { x: number; y: number }
 }
 
-export interface River {
-  id: string
-  name: string
-  svgPathIndices: number[] // Rivers can have multiple disconnected segments
+export interface River extends Location {
+  // Rivers are just locations like states/countries
 }
 
 export interface Question {
@@ -62,7 +60,7 @@ export interface Statistics {
   totalSessions: number
   byMode: {
     laender: ModeStatistics
-    city: ModeStatistics
+    orte: ModeStatistics
   }
   weakAreas: Array<{ locationId: string; locationName: string; successRate: number }>
 }

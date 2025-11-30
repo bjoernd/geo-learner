@@ -6,7 +6,7 @@ describe('ModeSelector Component', () => {
   it('should render both modes', () => {
     render(ModeSelector)
     expect(screen.getByText('Länder')).toBeInTheDocument()
-    expect(screen.getByText('Städte')).toBeInTheDocument()
+    expect(screen.getByText('Orte')).toBeInTheDocument()
   })
 
   it('should have clickable mode buttons', async () => {

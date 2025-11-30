@@ -1,8 +1,9 @@
 import { writable, get, derived } from 'svelte/store'
-import type { GameState, GameMode, Question, Answer, Location, GameSession } from '$lib/types'
+import type { GameState, GameMode, Question, Answer, Location, GameSession, River, City } from '$lib/types'
 import { federalStates } from '$lib/data/federalStates'
 import { neighboringCountries } from '$lib/data/neighboringCountries'
 import { cities } from '$lib/data/cities'
+import { rivers } from '$lib/data/rivers'
 import { compareText } from '$lib/utils/textMatching'
 
 const initialState: GameState = {
@@ -59,13 +60,22 @@ function createGameStateStore() {
       update(state => {
         if (!state.currentQuestion || !state.currentSession) return state
 
-        // For city mode, check if click is near the city
+        const location = state.currentQuestion.location
+        const isCity = 'coordinates' in location
         let correct = false
-        if (state.currentQuestion.mode === 'city' && clickPosition !== undefined) {
-          const city = state.currentQuestion.location as any
-          correct = isClickNearCity(clickPosition, city)
+
+        if (state.currentQuestion.mode === 'orte') {
+          if (isCity && clickPosition !== undefined) {
+            // City: check if click is near the city coordinates
+            const city = location as City
+            correct = isClickNearCity(clickPosition, city)
+          } else if (!isCity && clickedRegionId !== null) {
+            // River: check if clicked region matches
+            correct = clickedRegionId === location.svgPathId
+          }
         } else if (clickedRegionId !== null) {
-          correct = clickedRegionId === state.currentQuestion.location.svgPathId
+          // For laender mode (states/countries)
+          correct = clickedRegionId === location.svgPathId
         }
 
         const answer: Partial<Answer> = {
@@ -76,7 +86,7 @@ function createGameStateStore() {
         }
 
         // Track answered region
-        const regionId = state.currentQuestion.location.svgPathId
+        const regionId = location.svgPathId
         const updatedAnsweredRegions = {
           correct: correct
             ? [...state.answeredRegions.correct, regionId]
@@ -192,7 +202,7 @@ function moveToNextQuestion(state: GameState): GameState {
 }
 
 function generateQuestions(mode: GameMode): Question[] {
-  let locations: Location[] = []
+  let locations: (Location | River)[] = []
   let sampleSize: number
 
   switch (mode) {
@@ -200,8 +210,10 @@ function generateQuestions(mode: GameMode): Question[] {
       locations = [...federalStates, ...neighboringCountries]
       sampleSize = 10
       break
-    case 'city':
-      locations = [...cities]
+    case 'orte':
+      // Mix cities and rivers
+      const allOrte = [...cities, ...rivers as any[]]
+      locations = allOrte
       sampleSize = 15
       break
   }
@@ -211,7 +223,7 @@ function generateQuestions(mode: GameMode): Question[] {
 
   // Create questions
   const questions: Question[] = locations.map(location => ({
-    location,
+    location: location as Location,
     type: 'location',
     mode
   }))

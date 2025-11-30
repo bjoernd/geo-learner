@@ -1,137 +1,36 @@
 import type { River } from '$lib/types'
+import { findLocationById, findLocationByName } from './dataHelpers'
 
 export const rivers: readonly River[] = [
-  {
-    id: 'aller',
-    name: 'Aller',
-    svgPathIndices: [4]
-  },
-  {
-    id: 'chiemsee',
-    name: 'Chiemsee',
-    svgPathIndices: [49]
-  },
-  {
-    id: 'donau',
-    name: 'Donau',
-    svgPathIndices: [38, 46]
-  },
-  {
-    id: 'elbe',
-    name: 'Elbe',
-    svgPathIndices: [11, 12]
-  },
-  {
-    id: 'ems',
-    name: 'Ems',
-    svgPathIndices: [1]
-  },
-  {
-    id: 'fulda',
-    name: 'Fulda',
-    svgPathIndices: [0]
-  },
-  {
-    id: 'havel',
-    name: 'Havel',
-    svgPathIndices: [13, 14, 15, 16, 18, 19, 20, 21, 51, 53]
-  },
-  {
-    id: 'ijssel',
-    name: 'IJssel',
-    svgPathIndices: [45]
-  },
-  {
-    id: 'inn',
-    name: 'Inn',
-    svgPathIndices: [39]
-  },
-  {
-    id: 'lippe',
-    name: 'Lippe',
-    svgPathIndices: [6]
-  },
-  {
-    id: 'maas',
-    name: 'Maas',
-    svgPathIndices: [44]
-  },
-  {
-    id: 'main',
-    name: 'Main',
-    svgPathIndices: [32]
-  },
-  {
-    id: 'moldau',
-    name: 'Moldau',
-    svgPathIndices: [7, 8]
-  },
-  {
-    id: 'mosel',
-    name: 'Mosel',
-    svgPathIndices: [42]
-  },
-  {
-    id: 'neckar',
-    name: 'Neckar',
-    svgPathIndices: [47]
-  },
-  {
-    id: 'oder',
-    name: 'Oder',
-    svgPathIndices: [22, 23, 52]
-  },
-  {
-    id: 'rhein',
-    name: 'Rhein',
-    svgPathIndices: [10, 40, 41]
-  },
-  {
-    id: 'ruhr',
-    name: 'Ruhr',
-    svgPathIndices: [35]
-  },
-  {
-    id: 'saale',
-    name: 'Saale',
-    svgPathIndices: [2, 3, 5]
-  },
-  {
-    id: 'schwerinersee',
-    name: 'Schweriner See',
-    svgPathIndices: [50]
-  },
-  {
-    id: 'spree',
-    name: 'Spree',
-    svgPathIndices: [17, 25, 26, 27, 28]
-  },
-  {
-    id: 'warthe',
-    name: 'Warthe',
-    svgPathIndices: [9]
-  },
-  {
-    id: 'werra',
-    name: 'Werra',
-    svgPathIndices: [33]
-  },
-  {
-    id: 'weser',
-    name: 'Weser',
-    svgPathIndices: [34]
-  }
+  { id: 'fulda', name: 'Fulda', svgPathId: 'river-0' },
+  { id: 'ems', name: 'Ems', svgPathId: 'river-1' },
+  { id: 'saale', name: 'Saale', svgPathId: 'river-2' },
+  { id: 'aller', name: 'Aller', svgPathId: 'river-4' },
+  { id: 'lippe', name: 'Lippe', svgPathId: 'river-6' },
+  { id: 'moldau', name: 'Moldau', svgPathId: 'river-7' },
+  { id: 'warthe', name: 'Warthe', svgPathId: 'river-9' },
+  { id: 'rhein', name: 'Rhein', svgPathId: 'river-10' },
+  { id: 'elbe', name: 'Elbe', svgPathId: 'river-11' },
+  { id: 'havel', name: 'Havel', svgPathId: 'river-13' },
+  { id: 'spree', name: 'Spree', svgPathId: 'river-17' },
+  { id: 'oder', name: 'Oder', svgPathId: 'river-22' },
+  { id: 'main', name: 'Main', svgPathId: 'river-32' },
+  { id: 'werra', name: 'Werra', svgPathId: 'river-33' },
+  { id: 'weser', name: 'Weser', svgPathId: 'river-34' },
+  { id: 'ruhr', name: 'Ruhr', svgPathId: 'river-35' },
+  { id: 'donau', name: 'Donau', svgPathId: 'river-38' },
+  { id: 'inn', name: 'Inn', svgPathId: 'river-39' },
+  { id: 'mosel', name: 'Mosel', svgPathId: 'river-42' },
+  { id: 'maas', name: 'Maas', svgPathId: 'river-44' },
+  { id: 'ijssel', name: 'IJssel', svgPathId: 'river-45' },
+  { id: 'neckar', name: 'Neckar', svgPathId: 'river-47' },
+  { id: 'chiemsee', name: 'Chiemsee', svgPathId: 'river-49' },
+  { id: 'schwerinersee', name: 'Schweriner See', svgPathId: 'river-50' }
 ]
 
 // Helper functions
-export function getRiverById(id: string): River | undefined {
-  return rivers.find(r => r.id === id)
-}
+export const getRiverById = (id: string) =>
+  findLocationById(rivers, id)
 
-export function getRiverByName(name: string): River | undefined {
-  return rivers.find(r => r.name.toLowerCase() === name.toLowerCase())
-}
-
-export function getRiverBySvgPathIndex(index: number): River | undefined {
-  return rivers.find(r => r.svgPathIndices.includes(index))
-}
+export const getRiverByName = (name: string) =>
+  findLocationByName(rivers, name)

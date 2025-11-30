@@ -15,7 +15,7 @@ const defaultStatistics: Statistics = {
   totalSessions: 0,
   byMode: {
     laender: { ...defaultModeStats },
-    city: { ...defaultModeStats }
+    orte: { ...defaultModeStats }
   },
   weakAreas: []
 }

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>River Identifier - Germany Map</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        #map-container {
+            flex: 1;
+            border: 2px solid #333;
+            overflow: auto;
+            max-height: 90vh;
+            background: #f0f0f0;
+        }
+        #sidebar {
+            width: 400px;
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        .info-box {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .path-list {
+            max-height: 500px;
+            overflow-y: auto;
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .river-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            border-left: 4px solid #4caf50;
+        }
+        .river-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2e7d32;
+            margin-bottom: 8px;
+        }
+        .segment-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .segment-badge {
+            background: #81c784;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .segment-badge:hover {
+            background: #66bb6a;
+        }
+        .path-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #e3f2fd;
+            border-radius: 4px;
+            cursor: pointer;
+            border-left: 4px solid #1976d2;
+        }
+        .path-item:hover {
+            background: #bbdefb;
+        }
+        .path-item.selected {
+            background: #fff59d;
+            border-left-color: #fbc02d;
+            font-weight: bold;
+        }
+        .path-item.named {
+            background: #c8e6c9;
+            border-left-color: #388e3c;
+        }
+        .path-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .path-number {
+            font-weight: bold;
+            color: #1976d2;
+        }
+        .path-name {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+        }
+        .path-name.assigned {
+            color: #2e7d32;
+            font-weight: bold;
+            font-style: normal;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background: #1976d2;
+            color: white;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #1565c0;
+        }
+        button.danger {
+            background: #d32f2f;
+        }
+        button.danger:hover {
+            background: #c62828;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #output {
+            font-family: monospace;
+            white-space: pre;
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 11px;
+        }
+        .instructions {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        svg path[data-type="river"] {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        svg path[data-type="river"]:hover {
+            stroke: #ff6b00 !important;
+            stroke-width: 5 !important;
+            filter: drop-shadow(0 0 4px #ff6b00);
+        }
+        svg path[data-type="river"][data-selected="true"] {
+            stroke: #ffd700 !important;
+            stroke-width: 6 !important;
+            filter: drop-shadow(0 0 6px #ffd700);
+            animation: pulse 1s infinite;
+        }
+        svg path[data-type="river"][data-named="true"] {
+            stroke: #4caf50 !important;
+            stroke-width: 3 !important;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        .current-path {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1976d2;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .control-buttons {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        .control-buttons button {
+            flex: 1;
+            padding: 5px;
+            margin: 0;
+            font-size: 12px;
+        }
+        .view-toggle {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .view-toggle button {
+            flex: 1;
+            margin: 0;
+        }
+        .view-toggle button.active {
+            background: #388e3c;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <!-- SVG will be loaded here -->
+    </div>
+    <div id="sidebar">
+        <h1>🏞️ River Path Identifier</h1>
+
+        <div class="instructions">
+            <strong>Instructions:</strong><br>
+            1. Click any blue water element (river/lake) on the map<br>
+            2. Enter the name in the input field<br>
+            3. Multiple segments of the same water body will be grouped<br>
+            4. Use "Grouped View" to see all segments<br>
+            5. Finds ALL blue elements (paths, polylines, lines)<br>
+            6. Click "Export TypeScript" when done
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="total-paths">0</div>
+                <div class="stat-label">Total Segments</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="named-count">0</div>
+                <div class="stat-label">Named</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="river-count">0</div>
+                <div class="stat-label">Unique Rivers</div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>Current Path:</h3>
+            <div class="current-path" id="current-path">Click a river on the map</div>
+        </div>
+
+        <div class="info-box">
+            <div class="view-toggle">
+                <button onclick="setView('paths')" id="view-paths" class="active">Path View</button>
+                <button onclick="setView('grouped')" id="view-grouped">Grouped View</button>
+            </div>
+            <div id="path-list" style="display: block;">
+                <!-- Paths will be populated here -->
+            </div>
+            <div id="grouped-list" style="display: none;">
+                <!-- Grouped rivers will be populated here -->
+            </div>
+        </div>
+
+        <div class="info-box">
+            <button onclick="highlightAll()">Highlight All</button>
+            <button onclick="clearHighlights()">Clear Highlights</button>
+            <button onclick="resetAll()" class="danger">Reset All Names</button>
+            <button onclick="exportTypeScript()">Export TypeScript</button>
+        </div>
+
+        <div class="info-box">
+            <h3>TypeScript Output:</h3>
+            <div id="output">// Click "Export TypeScript" to generate code...</div>
+        </div>
+    </div>
+
+    <script>
+        let riverPaths = [];
+        let pathNames = {}; // pathIndex -> name
+        let selectedPathIndex = null;
+        let currentView = 'paths';
+
+        // Load SVG
+        async function loadSVG() {
+            const response = await fetch('app/src/assets/germany-map.svg');
+            const svgText = await response.text();
+            document.getElementById('map-container').innerHTML = svgText;
+
+            const svg = document.querySelector('svg');
+
+            // Find ALL blue water elements (rivers and lakes)
+            // Look for paths, polylines, and lines with the blue water color
+            const riverColor = '#0978AB';
+            const allElements = svg.querySelectorAll('path, polyline, line');
+
+            riverPaths = Array.from(allElements).filter(el => {
+                const stroke = el.getAttribute('stroke');
+                return stroke && stroke.toUpperCase() === riverColor.toUpperCase();
+            });
+
+            console.log(`Found ${riverPaths.length} blue water elements (paths, polylines, lines)`);
+
+            riverPaths.forEach((path, index) => {
+                path.setAttribute('data-type', 'river');
+                path.setAttribute('data-path-index', index);
+                path.setAttribute('data-selected', 'false');
+                path.setAttribute('data-named', 'false');
+
+                if (!path.hasAttribute('data-original-stroke')) {
+                    path.setAttribute('data-original-stroke', path.getAttribute('stroke') || '#0978AB');
+                }
+                if (!path.hasAttribute('data-original-stroke-width')) {
+                    path.setAttribute('data-original-stroke-width', path.getAttribute('stroke-width') || '0.5');
+                }
+
+                path.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handlePathClick(index);
+                });
+            });
+
+            updateStats();
+            renderView();
+        }
+
+        function setView(view) {
+            currentView = view;
+            document.getElementById('view-paths').classList.toggle('active', view === 'paths');
+            document.getElementById('view-grouped').classList.toggle('active', view === 'grouped');
+            document.getElementById('path-list').style.display = view === 'paths' ? 'block' : 'none';
+            document.getElementById('grouped-list').style.display = view === 'grouped' ? 'block' : 'none';
+            renderView();
+        }
+
+        function renderView() {
+            if (currentView === 'paths') {
+                renderPathList();
+            } else {
+                renderGroupedList();
+            }
+        }
+
+        function handlePathClick(pathIndex) {
+            if (selectedPathIndex !== null && selectedPathIndex !== pathIndex) {
+                riverPaths[selectedPathIndex].setAttribute('data-selected', 'false');
+            }
+
+            selectedPathIndex = pathIndex;
+            riverPaths[pathIndex].setAttribute('data-selected', 'true');
+
+            document.getElementById('current-path').textContent = `Path #${pathIndex}`;
+
+            renderView();
+
+            const pathElement = document.getElementById(`path-${pathIndex}`);
+            if (pathElement) {
+                pathElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function renderPathList() {
+            const container = document.getElementById('path-list');
+            container.innerHTML = '';
+
+            riverPaths.forEach((path, index) => {
+                const div = document.createElement('div');
+                div.className = 'path-item';
+                div.id = `path-${index}`;
+
+                if (selectedPathIndex === index) {
+                    div.classList.add('selected');
+                }
+                if (pathNames[index]) {
+                    div.classList.add('named');
+                }
+
+                const header = document.createElement('div');
+                header.className = 'path-header';
+
+                const numberSpan = document.createElement('span');
+                numberSpan.className = 'path-number';
+                numberSpan.textContent = `Path #${index}`;
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = `path-name ${pathNames[index] ? 'assigned' : ''}`;
+                nameSpan.textContent = pathNames[index] || 'Unnamed';
+
+                header.appendChild(numberSpan);
+                header.appendChild(nameSpan);
+                div.appendChild(header);
+
+                if (selectedPathIndex === index) {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.placeholder = 'Enter river name...';
+                    input.value = pathNames[index] || '';
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            saveName(index, input.value);
+                        }
+                    });
+                    div.appendChild(input);
+
+                    const controls = document.createElement('div');
+                    controls.className = 'control-buttons';
+
+                    const saveBtn = document.createElement('button');
+                    saveBtn.textContent = 'Save Name';
+                    saveBtn.onclick = () => saveName(index, input.value);
+
+                    const clearBtn = document.createElement('button');
+                    clearBtn.textContent = 'Clear';
+                    clearBtn.className = 'danger';
+                    clearBtn.onclick = () => {
+                        input.value = '';
+                        saveName(index, '');
+                    };
+
+                    const highlightBtn = document.createElement('button');
+                    highlightBtn.textContent = 'Flash';
+                    highlightBtn.onclick = () => flashPath(index);
+
+                    controls.appendChild(saveBtn);
+                    controls.appendChild(clearBtn);
+                    controls.appendChild(highlightBtn);
+                    div.appendChild(controls);
+
+                    setTimeout(() => input.focus(), 0);
+                }
+
+                div.onclick = (e) => {
+                    if (e.target === div || e.target === header || e.target.classList.contains('path-number') || e.target.classList.contains('path-name')) {
+                        handlePathClick(index);
+                    }
+                };
+
+                container.appendChild(div);
+            });
+        }
+
+        function renderGroupedList() {
+            const container = document.getElementById('grouped-list');
+            container.innerHTML = '';
+
+            // Group paths by river name
+            const rivers = {};
+            Object.entries(pathNames).forEach(([pathIndex, name]) => {
+                if (!rivers[name]) {
+                    rivers[name] = [];
+                }
+                rivers[name].push(parseInt(pathIndex));
+            });
+
+            // Sort rivers alphabetically
+            const sortedRivers = Object.keys(rivers).sort();
+
+            sortedRivers.forEach(riverName => {
+                const div = document.createElement('div');
+                div.className = 'river-group';
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'river-name';
+                nameDiv.textContent = `${riverName} (${rivers[riverName].length} segment${rivers[riverName].length > 1 ? 's' : ''})`;
+                div.appendChild(nameDiv);
+
+                const segmentList = document.createElement('div');
+                segmentList.className = 'segment-list';
+
+                rivers[riverName].sort((a, b) => a - b).forEach(pathIndex => {
+                    const badge = document.createElement('span');
+                    badge.className = 'segment-badge';
+                    badge.textContent = `#${pathIndex}`;
+                    badge.onclick = () => {
+                        handlePathClick(pathIndex);
+                        setView('paths');
+                    };
+                    badge.onmouseenter = () => flashPath(pathIndex);
+                    segmentList.appendChild(badge);
+                });
+
+                div.appendChild(segmentList);
+                container.appendChild(div);
+            });
+
+            // Show unnamed paths
+            const unnamed = riverPaths
+                .map((_, index) => index)
+                .filter(index => !pathNames[index]);
+
+            if (unnamed.length > 0) {
+                const div = document.createElement('div');
+                div.className = 'river-group';
+                div.style.background = '#ffebee';
+                div.style.borderLeftColor = '#f44336';
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'river-name';
+                nameDiv.style.color = '#c62828';
+                nameDiv.textContent = `Unnamed (${unnamed.length})`;
+                div.appendChild(nameDiv);
+
+                const segmentList = document.createElement('div');
+                segmentList.className = 'segment-list';
+
+                unnamed.forEach(pathIndex => {
+                    const badge = document.createElement('span');
+                    badge.className = 'segment-badge';
+                    badge.style.background = '#ef5350';
+                    badge.textContent = `#${pathIndex}`;
+                    badge.onclick = () => {
+                        handlePathClick(pathIndex);
+                        setView('paths');
+                    };
+                    badge.onmouseenter = () => flashPath(pathIndex);
+                    segmentList.appendChild(badge);
+                });
+
+                div.appendChild(segmentList);
+                container.appendChild(div);
+            }
+        }
+
+        function saveName(pathIndex, name) {
+            name = name.trim();
+
+            if (name) {
+                pathNames[pathIndex] = name;
+                riverPaths[pathIndex].setAttribute('data-named', 'true');
+            } else {
+                delete pathNames[pathIndex];
+                riverPaths[pathIndex].setAttribute('data-named', 'false');
+            }
+
+            updateStats();
+
+            const nextUnnamed = riverPaths.findIndex((p, i) => i > pathIndex && !pathNames[i]);
+            if (nextUnnamed !== -1) {
+                handlePathClick(nextUnnamed);
+            } else {
+                renderView();
+            }
+        }
+
+        function flashPath(pathIndex) {
+            const path = riverPaths[pathIndex];
+            const originalStroke = path.getAttribute('stroke');
+            const originalWidth = path.getAttribute('stroke-width');
+
+            let count = 0;
+            const interval = setInterval(() => {
+                if (count % 2 === 0) {
+                    path.setAttribute('stroke', '#ff00ff');
+                    path.setAttribute('stroke-width', '8');
+                } else {
+                    path.setAttribute('stroke', originalStroke);
+                    path.setAttribute('stroke-width', originalWidth);
+                }
+                count++;
+                if (count >= 6) {
+                    clearInterval(interval);
+                    path.setAttribute('stroke', originalStroke);
+                    path.setAttribute('stroke-width', originalWidth);
+                }
+            }, 300);
+        }
+
+        function highlightAll() {
+            riverPaths.forEach((path, index) => {
+                setTimeout(() => flashPath(index), index * 100);
+            });
+        }
+
+        function clearHighlights() {
+            riverPaths.forEach((path) => {
+                const originalStroke = path.getAttribute('data-original-stroke');
+                const originalWidth = path.getAttribute('data-original-stroke-width');
+                path.setAttribute('stroke', originalStroke);
+                path.setAttribute('stroke-width', originalWidth);
+                path.setAttribute('data-selected', 'false');
+            });
+            selectedPathIndex = null;
+            renderView();
+        }
+
+        function resetAll() {
+            if (!confirm('Reset all river names?')) return;
+
+            pathNames = {};
+            riverPaths.forEach(path => {
+                path.setAttribute('data-named', 'false');
+                path.setAttribute('data-selected', 'false');
+            });
+            selectedPathIndex = null;
+
+            updateStats();
+            renderView();
+        }
+
+        function updateStats() {
+            document.getElementById('total-paths').textContent = riverPaths.length;
+            document.getElementById('named-count').textContent = Object.keys(pathNames).length;
+
+            // Count unique river names
+            const uniqueRivers = new Set(Object.values(pathNames));
+            document.getElementById('river-count').textContent = uniqueRivers.size;
+        }
+
+        function exportTypeScript() {
+            // Group paths by river name
+            const rivers = {};
+            Object.entries(pathNames).forEach(([pathIndex, name]) => {
+                if (!rivers[name]) {
+                    rivers[name] = [];
+                }
+                rivers[name].push(parseInt(pathIndex));
+            });
+
+            if (Object.keys(rivers).length === 0) {
+                alert('No rivers named yet!');
+                return;
+            }
+
+            const output = [];
+            output.push(`import type { River } from '$lib/types'`);
+            output.push('');
+            output.push('export const rivers: readonly River[] = [');
+
+            // Sort rivers alphabetically
+            Object.keys(rivers).sort().forEach(name => {
+                const pathIndices = rivers[name].sort((a, b) => a - b);
+                const id = name.toLowerCase()
+                    .replace(/ä/g, 'ae')
+                    .replace(/ö/g, 'oe')
+                    .replace(/ü/g, 'ue')
+                    .replace(/ß/g, 'ss')
+                    .replace(/[^a-z]/g, '');
+
+                output.push(`  {`);
+                output.push(`    id: '${id}',`);
+                output.push(`    name: '${name}',`);
+                output.push(`    svgPathIndices: [${pathIndices.join(', ')}]`);
+                output.push(`  },`);
+            });
+
+            output.push(']');
+            output.push('');
+            output.push('// Helper functions');
+            output.push('export function getRiverById(id: string): River | undefined {');
+            output.push('  return rivers.find(r => r.id === id)');
+            output.push('}');
+            output.push('');
+            output.push('export function getRiverByName(name: string): River | undefined {');
+            output.push('  return rivers.find(r => r.name.toLowerCase() === name.toLowerCase())');
+            output.push('}');
+            output.push('');
+            output.push('export function getRiverBySvgPathIndex(index: number): River | undefined {');
+            output.push('  return rivers.find(r => r.svgPathIndices.includes(index))');
+            output.push('}');
+
+            document.getElementById('output').textContent = output.join('\n');
+
+            console.log('\n=== Rivers Summary ===');
+            Object.keys(rivers).sort().forEach(name => {
+                const id = name.toLowerCase()
+                    .replace(/ä/g, 'ae')
+                    .replace(/ö/g, 'oe')
+                    .replace(/ü/g, 'ue')
+                    .replace(/ß/g, 'ss')
+                    .replace(/[^a-z]/g, '');
+                console.log(`${name} (id: ${id}): segments ${rivers[name].sort((a,b) => a-b).join(', ')}`);
+            });
+        }
+
+        loadSVG();
+    </script>
+</body>
+</html>

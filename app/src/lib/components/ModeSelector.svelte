@@ -16,9 +16,9 @@
       description: 'Bundesländer plus die 9 Nachbarländer Deutschlands'
     },
     {
-      id: 'city',
-      label: 'Städte',
-      description: 'Finde deutsche Städte auf der Karte'
+      id: 'orte',
+      label: 'Orte',
+      description: 'Finde deutsche Städte und Flüsse auf der Karte'
     }
   ]
 

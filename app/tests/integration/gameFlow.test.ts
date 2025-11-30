@@ -49,7 +49,7 @@ describe('Game Flow Integration', () => {
   })
 
   it('should handle incorrect answers', () => {
-    gameState.startNewSession('city')
+    gameState.startNewSession('orte')
 
     let state = get(gameState)
     const initialScore = state.currentSession!.score
@@ -65,10 +65,10 @@ describe('Game Flow Integration', () => {
   it('should handle mode switching', () => {
     gameState.startNewSession('laender')
     gameState.clearSession()
-    gameState.startNewSession('city')
+    gameState.startNewSession('orte')
 
     const state = get(gameState)
-    expect(state.currentMode).toBe('city')
+    expect(state.currentMode).toBe('orte')
     expect(state.currentSession!.totalQuestions).toBe(15)
   })
 })

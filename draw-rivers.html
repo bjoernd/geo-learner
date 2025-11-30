@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draw Rivers on Germany Map</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      display: flex;
+      gap: 20px;
+    }
+
+    #map-container {
+      flex: 1;
+      border: 2px solid #333;
+      overflow: auto;
+      max-height: 90vh;
+      background: #f5f5f5;
+    }
+
+    #map-container svg {
+      cursor: crosshair;
+    }
+
+    #sidebar {
+      width: 350px;
+      background: #f9f9f9;
+      padding: 20px;
+      border: 2px solid #333;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    .river-list {
+      margin-bottom: 20px;
+    }
+
+    .river-item {
+      padding: 8px;
+      margin: 4px 0;
+      background: white;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .river-item:hover {
+      background: #f0f0f0;
+    }
+
+    .river-item.active {
+      background: #e3f2fd;
+      border-color: #2196F3;
+      font-weight: bold;
+    }
+
+    .river-item.completed {
+      background: #c8e6c9;
+      border-color: #4CAF50;
+    }
+
+    .current-path {
+      background: #fff3cd;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ffc107;
+      border-radius: 4px;
+    }
+
+    .current-path h3 {
+      margin: 0 0 10px 0;
+      font-size: 1rem;
+    }
+
+    .point-list {
+      font-size: 0.85rem;
+      max-height: 150px;
+      overflow-y: auto;
+      background: white;
+      padding: 5px;
+      margin: 5px 0;
+    }
+
+    button {
+      padding: 8px 16px;
+      margin: 5px 5px 5px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    button.primary {
+      background: #2196F3;
+      color: white;
+    }
+
+    button.primary:hover {
+      background: #1976D2;
+    }
+
+    button.danger {
+      background: #f44336;
+      color: white;
+    }
+
+    button.danger:hover {
+      background: #d32f2f;
+    }
+
+    button.success {
+      background: #4CAF50;
+      color: white;
+    }
+
+    button.success:hover {
+      background: #388E3C;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .stats {
+      background: #e8f5e9;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+    }
+
+    .instructions {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 0.85rem;
+    }
+
+    .export-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #ddd;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      font-family: monospace;
+      font-size: 0.75rem;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+
+    /* River path styling in SVG */
+    .temp-river-path {
+      fill: none;
+      stroke: #2196F3;
+      stroke-width: 3;
+      pointer-events: none;
+    }
+
+    .completed-river-path {
+      fill: none;
+      stroke: #4CAF50;
+      stroke-width: 2;
+      pointer-events: none;
+    }
+
+    .temp-point {
+      fill: #2196F3;
+      stroke: white;
+      stroke-width: 2;
+    }
+  </style>
+</head>
+<body>
+  <div id="map-container">
+    <p style="padding: 20px;">Loading map...</p>
+  </div>
+
+  <div id="sidebar">
+    <h1>River Drawing Tool</h1>
+
+    <div class="instructions">
+      <strong>Instructions:</strong><br>
+      1. Select a river from the list below<br>
+      2. Click on the map to place points along the river<br>
+      3. Click "Finish Path" when done<br>
+      4. Export all rivers when complete
+    </div>
+
+    <div class="stats" id="stats">
+      Rivers drawn: 0 / 24
+    </div>
+
+    <div class="current-path" id="current-path-info" style="display: none;">
+      <h3 id="current-river-name">No river selected</h3>
+      <div>Points: <span id="point-count">0</span></div>
+      <div class="point-list" id="point-list"></div>
+      <button class="danger" onclick="undoLastPoint()">Undo Last Point</button>
+      <button class="success" onclick="finishPath()" id="finish-btn" disabled>Finish Path</button>
+      <button class="danger" onclick="cancelPath()">Cancel</button>
+    </div>
+
+    <h2>Rivers to Draw</h2>
+    <div class="river-list" id="river-list"></div>
+
+    <div class="export-section">
+      <h2>Export Rivers</h2>
+      <button class="primary" onclick="exportRivers()">Generate SVG Code</button>
+      <button class="success" onclick="copyToClipboard()">Copy to Clipboard</button>
+      <textarea id="export-output" readonly placeholder="Generated SVG code will appear here..."></textarea>
+    </div>
+  </div>
+
+  <script>
+    // River data from rivers.ts
+    const rivers = [
+      { id: 'aller', name: 'Aller', index: 4 },
+      { id: 'chiemsee', name: 'Chiemsee', index: 49 },
+      { id: 'donau', name: 'Donau', index: 38 },
+      { id: 'elbe', name: 'Elbe', index: 11 },
+      { id: 'ems', name: 'Ems', index: 1 },
+      { id: 'fulda', name: 'Fulda', index: 0 },
+      { id: 'havel', name: 'Havel', index: 13 },
+      { id: 'ijssel', name: 'IJssel', index: 45 },
+      { id: 'inn', name: 'Inn', index: 39 },
+      { id: 'lippe', name: 'Lippe', index: 6 },
+      { id: 'maas', name: 'Maas', index: 44 },
+      { id: 'main', name: 'Main', index: 32 },
+      { id: 'moldau', name: 'Moldau', index: 7 },
+      { id: 'mosel', name: 'Mosel', index: 42 },
+      { id: 'neckar', name: 'Neckar', index: 47 },
+      { id: 'oder', name: 'Oder', index: 22 },
+      { id: 'rhein', name: 'Rhein', index: 10 },
+      { id: 'ruhr', name: 'Ruhr', index: 35 },
+      { id: 'saale', name: 'Saale', index: 2 },
+      { id: 'schwerinersee', name: 'Schweriner See', index: 50 },
+      { id: 'spree', name: 'Spree', index: 17 },
+      { id: 'warthe', name: 'Warthe', index: 9 },
+      { id: 'werra', name: 'Werra', index: 33 },
+      { id: 'weser', name: 'Weser', index: 34 }
+    ];
+
+    let svgElement = null;
+    let currentRiver = null;
+    let currentPoints = [];
+    let drawnRivers = {};
+    let tempPathElement = null;
+    let tempPointElements = [];
+    let riverPathsGroup = null;
+
+    async function init() {
+      try {
+        const response = await fetch('app/src/assets/germany-map.svg');
+        const svgText = await response.text();
+        document.getElementById('map-container').innerHTML = svgText;
+        svgElement = document.querySelector('#map-container svg');
+
+        // Create a group for river paths
+        riverPathsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        riverPathsGroup.setAttribute('id', 'rivers-group');
+        svgElement.appendChild(riverPathsGroup);
+
+        // Set up click handler
+        svgElement.addEventListener('click', handleMapClick);
+
+        // Render river list
+        renderRiverList();
+        updateStats();
+      } catch (error) {
+        console.error('Failed to load map:', error);
+        document.getElementById('map-container').innerHTML = '<p style="color: red; padding: 20px;">Failed to load map</p>';
+      }
+    }
+
+    function renderRiverList() {
+      const listElement = document.getElementById('river-list');
+      listElement.innerHTML = '';
+
+      rivers.forEach(river => {
+        const div = document.createElement('div');
+        div.className = 'river-item';
+        if (drawnRivers[river.index]) {
+          div.classList.add('completed');
+        }
+        if (currentRiver && currentRiver.index === river.index) {
+          div.classList.add('active');
+        }
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = river.name;
+
+        const indexSpan = document.createElement('span');
+        indexSpan.textContent = `#${river.index}`;
+        indexSpan.style.fontSize = '0.85rem';
+        indexSpan.style.color = '#666';
+
+        div.appendChild(nameSpan);
+        div.appendChild(indexSpan);
+        div.onclick = () => selectRiver(river);
+
+        listElement.appendChild(div);
+      });
+    }
+
+    function selectRiver(river) {
+      if (currentPoints.length > 0) {
+        if (!confirm('You have unsaved points. Start a new river?')) {
+          return;
+        }
+        cancelPath();
+      }
+
+      currentRiver = river;
+      currentPoints = [];
+      document.getElementById('current-path-info').style.display = 'block';
+      document.getElementById('current-river-name').textContent = `Drawing: ${river.name} (river-${river.index})`;
+      updatePointList();
+      renderRiverList();
+    }
+
+    function handleMapClick(event) {
+      if (!currentRiver) {
+        alert('Please select a river first');
+        return;
+      }
+
+      // Get click coordinates in SVG space
+      const pt = svgElement.createSVGPoint();
+      pt.x = event.clientX;
+      pt.y = event.clientY;
+      const svgP = pt.matrixTransform(svgElement.getScreenCTM().inverse());
+
+      currentPoints.push({ x: svgP.x, y: svgP.y });
+      updatePointList();
+      updateTempPath();
+      document.getElementById('finish-btn').disabled = currentPoints.length < 2;
+    }
+
+    function updatePointList() {
+      document.getElementById('point-count').textContent = currentPoints.length;
+      const listElement = document.getElementById('point-list');
+      listElement.innerHTML = currentPoints.map((p, i) =>
+        `${i + 1}. (${p.x.toFixed(1)}, ${p.y.toFixed(1)})`
+      ).join('<br>');
+    }
+
+    function updateTempPath() {
+      // Remove old temp path and points
+      if (tempPathElement) {
+        tempPathElement.remove();
+      }
+      tempPointElements.forEach(el => el.remove());
+      tempPointElements = [];
+
+      if (currentPoints.length === 0) return;
+
+      // Draw temp path
+      const pathData = 'M ' + currentPoints.map(p => `${p.x},${p.y}`).join(' L ');
+      tempPathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      tempPathElement.setAttribute('d', pathData);
+      tempPathElement.setAttribute('class', 'temp-river-path');
+      riverPathsGroup.appendChild(tempPathElement);
+
+      // Draw points
+      currentPoints.forEach(p => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', p.x);
+        circle.setAttribute('cy', p.y);
+        circle.setAttribute('r', '4');
+        circle.setAttribute('class', 'temp-point');
+        riverPathsGroup.appendChild(circle);
+        tempPointElements.push(circle);
+      });
+    }
+
+    function undoLastPoint() {
+      if (currentPoints.length > 0) {
+        currentPoints.pop();
+        updatePointList();
+        updateTempPath();
+        document.getElementById('finish-btn').disabled = currentPoints.length < 2;
+      }
+    }
+
+    function finishPath() {
+      if (currentPoints.length < 2) {
+        alert('Need at least 2 points to create a path');
+        return;
+      }
+
+      // Save the path
+      drawnRivers[currentRiver.index] = {
+        river: currentRiver,
+        points: [...currentPoints]
+      };
+
+      // Create permanent path
+      if (tempPathElement) {
+        tempPathElement.setAttribute('class', 'completed-river-path');
+        tempPathElement.setAttribute('id', `river-${currentRiver.index}`);
+      }
+
+      // Remove temp points
+      tempPointElements.forEach(el => el.remove());
+      tempPointElements = [];
+      tempPathElement = null;
+
+      // Reset
+      currentRiver = null;
+      currentPoints = [];
+      document.getElementById('current-path-info').style.display = 'none';
+      renderRiverList();
+      updateStats();
+    }
+
+    function cancelPath() {
+      currentPoints = [];
+      currentRiver = null;
+      if (tempPathElement) {
+        tempPathElement.remove();
+        tempPathElement = null;
+      }
+      tempPointElements.forEach(el => el.remove());
+      tempPointElements = [];
+      document.getElementById('current-path-info').style.display = 'none';
+      renderRiverList();
+    }
+
+    function updateStats() {
+      const drawn = Object.keys(drawnRivers).length;
+      const total = rivers.length;
+      document.getElementById('stats').innerHTML = `Rivers drawn: ${drawn} / ${total}`;
+    }
+
+    function exportRivers() {
+      const indices = Object.keys(drawnRivers).sort((a, b) => parseInt(a) - parseInt(b));
+
+      let svg = '<!-- River paths for Germany map -->\n';
+      svg += '<g id="rivers-group" class="rivers">\n';
+
+      indices.forEach(index => {
+        const data = drawnRivers[index];
+        const pathData = 'M ' + data.points.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' L ');
+        svg += `  <path id="river-${index}" class="river-path" d="${pathData}" />\n`;
+      });
+
+      svg += '</g>\n';
+
+      document.getElementById('export-output').value = svg;
+    }
+
+    function copyToClipboard() {
+      const textarea = document.getElementById('export-output');
+      if (!textarea.value) {
+        alert('Generate SVG code first');
+        return;
+      }
+      textarea.select();
+      document.execCommand('copy');
+      alert('Copied to clipboard!');
+    }
+
+    // Initialize on load
+    init();
+  </script>
+</body>
+</html>

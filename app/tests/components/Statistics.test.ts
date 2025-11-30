@@ -46,7 +46,7 @@ describe('Statistics Component', () => {
 
   it('should display mode statistics', () => {
     const mockSession: GameSession = {
-      mode: 'city',
+      mode: 'orte',
       score: 15,
       totalQuestions: 20,
       answers: [],
@@ -57,7 +57,7 @@ describe('Statistics Component', () => {
     statistics.recordSession(mockSession)
 
     render(Statistics, { props: { show: true } })
-    expect(screen.getByText('Städte')).toBeInTheDocument()
+    expect(screen.getByText('Orte')).toBeInTheDocument()
   })
 
   it('should show "Noch keine Daten" for modes not played', () => {

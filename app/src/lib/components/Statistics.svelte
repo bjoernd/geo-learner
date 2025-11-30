@@ -12,7 +12,7 @@
 
   const modeLabels: Record<GameMode, string> = {
     laender: 'Länder',
-    city: 'Städte'
+    orte: 'Orte'
   }
 
   function handleClose() {
