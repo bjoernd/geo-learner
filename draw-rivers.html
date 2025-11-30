@@ -163,11 +163,33 @@
 
     textarea {
       width: 100%;
-      height: 200px;
+      height: 150px;
       font-family: monospace;
       font-size: 0.75rem;
       padding: 5px;
       box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"] {
+      font-family: Arial, sans-serif;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .river-item .delete-btn {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-left: 8px;
+    }
+
+    .river-item .delete-btn:hover {
+      background: #d32f2f;
     }
 
     /* River path styling in SVG */
@@ -224,41 +246,55 @@
     <h2>Rivers to Draw</h2>
     <div class="river-list" id="river-list"></div>
 
+    <h2>Add New River</h2>
+    <div style="background: #e3f2fd; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+      <input type="text" id="new-river-name" placeholder="River name (e.g., Isar)"
+             style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;">
+      <input type="text" id="new-river-id" placeholder="River ID (e.g., isar)"
+             style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;">
+      <button class="primary" onclick="addNewRiver()">Add River to List</button>
+    </div>
+
     <div class="export-section">
       <h2>Export Rivers</h2>
-      <button class="primary" onclick="exportRivers()">Generate SVG Code</button>
-      <button class="success" onclick="copyToClipboard()">Copy to Clipboard</button>
-      <textarea id="export-output" readonly placeholder="Generated SVG code will appear here..."></textarea>
+      <button class="primary" onclick="exportSVG()">Generate SVG Code</button>
+      <button class="primary" onclick="exportTypeScript()">Generate TypeScript Code</button>
+      <button class="success" onclick="copyToClipboard('svg')">Copy SVG</button>
+      <button class="success" onclick="copyToClipboard('ts')">Copy TypeScript</button>
+      <h3>SVG Code</h3>
+      <textarea id="export-svg" readonly placeholder="SVG code will appear here..."></textarea>
+      <h3>TypeScript Code (rivers.ts)</h3>
+      <textarea id="export-ts" readonly placeholder="TypeScript code will appear here..."></textarea>
     </div>
   </div>
 
   <script>
-    // River data from rivers.ts
-    const rivers = [
-      { id: 'aller', name: 'Aller', index: 4 },
-      { id: 'chiemsee', name: 'Chiemsee', index: 49 },
-      { id: 'donau', name: 'Donau', index: 38 },
-      { id: 'elbe', name: 'Elbe', index: 11 },
-      { id: 'ems', name: 'Ems', index: 1 },
+    // River data - starts with existing rivers from rivers.ts
+    let rivers = [
       { id: 'fulda', name: 'Fulda', index: 0 },
-      { id: 'havel', name: 'Havel', index: 13 },
-      { id: 'ijssel', name: 'IJssel', index: 45 },
-      { id: 'inn', name: 'Inn', index: 39 },
-      { id: 'lippe', name: 'Lippe', index: 6 },
-      { id: 'maas', name: 'Maas', index: 44 },
-      { id: 'main', name: 'Main', index: 32 },
-      { id: 'moldau', name: 'Moldau', index: 7 },
-      { id: 'mosel', name: 'Mosel', index: 42 },
-      { id: 'neckar', name: 'Neckar', index: 47 },
-      { id: 'oder', name: 'Oder', index: 22 },
-      { id: 'rhein', name: 'Rhein', index: 10 },
-      { id: 'ruhr', name: 'Ruhr', index: 35 },
+      { id: 'ems', name: 'Ems', index: 1 },
       { id: 'saale', name: 'Saale', index: 2 },
-      { id: 'schwerinersee', name: 'Schweriner See', index: 50 },
-      { id: 'spree', name: 'Spree', index: 17 },
+      { id: 'aller', name: 'Aller', index: 4 },
+      { id: 'lippe', name: 'Lippe', index: 6 },
+      { id: 'moldau', name: 'Moldau', index: 7 },
       { id: 'warthe', name: 'Warthe', index: 9 },
+      { id: 'rhein', name: 'Rhein', index: 10 },
+      { id: 'elbe', name: 'Elbe', index: 11 },
+      { id: 'havel', name: 'Havel', index: 13 },
+      { id: 'spree', name: 'Spree', index: 17 },
+      { id: 'oder', name: 'Oder', index: 22 },
+      { id: 'main', name: 'Main', index: 32 },
       { id: 'werra', name: 'Werra', index: 33 },
-      { id: 'weser', name: 'Weser', index: 34 }
+      { id: 'weser', name: 'Weser', index: 34 },
+      { id: 'ruhr', name: 'Ruhr', index: 35 },
+      { id: 'donau', name: 'Donau', index: 38 },
+      { id: 'inn', name: 'Inn', index: 39 },
+      { id: 'mosel', name: 'Mosel', index: 42 },
+      { id: 'maas', name: 'Maas', index: 44 },
+      { id: 'ijssel', name: 'IJssel', index: 45 },
+      { id: 'neckar', name: 'Neckar', index: 47 },
+      { id: 'chiemsee', name: 'Chiemsee', index: 49 },
+      { id: 'schwerinersee', name: 'Schweriner See', index: 50 }
     ];
 
     let svgElement = null;
@@ -276,10 +312,17 @@
         document.getElementById('map-container').innerHTML = svgText;
         svgElement = document.querySelector('#map-container svg');
 
-        // Create a group for river paths
-        riverPathsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        riverPathsGroup.setAttribute('id', 'rivers-group');
-        svgElement.appendChild(riverPathsGroup);
+        // Check if rivers group already exists
+        riverPathsGroup = svgElement.querySelector('#rivers-group');
+        if (!riverPathsGroup) {
+          // Create a group for river paths if it doesn't exist
+          riverPathsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          riverPathsGroup.setAttribute('id', 'rivers-group');
+          svgElement.appendChild(riverPathsGroup);
+        }
+
+        // Load existing river paths from SVG
+        loadExistingRivers();
 
         // Set up click handler
         svgElement.addEventListener('click', handleMapClick);
@@ -291,6 +334,60 @@
         console.error('Failed to load map:', error);
         document.getElementById('map-container').innerHTML = '<p style="color: red; padding: 20px;">Failed to load map</p>';
       }
+    }
+
+    function loadExistingRivers() {
+      const existingPaths = svgElement.querySelectorAll('.river-path');
+      existingPaths.forEach(path => {
+        const id = path.getAttribute('id');
+        const match = id.match(/^river-(\d+)$/);
+        if (!match) return;
+
+        const index = parseInt(match[1], 10);
+        const river = rivers.find(r => r.index === index);
+        if (!river) {
+          console.warn(`Found river path ${id} but no matching river definition`);
+          return;
+        }
+
+        // Parse the path data to extract points
+        const pathData = path.getAttribute('d');
+        const points = parsePathData(pathData);
+
+        if (points.length > 0) {
+          drawnRivers[index] = {
+            river: river,
+            points: points
+          };
+
+          // Mark the path as completed
+          path.setAttribute('class', 'completed-river-path river-path');
+        }
+      });
+
+      console.log(`Loaded ${Object.keys(drawnRivers).length} existing rivers from SVG`);
+    }
+
+    function parsePathData(pathData) {
+      // Parse SVG path data like "M 100,200 L 150,250 L 200,300"
+      const points = [];
+      const commands = pathData.split(/(?=[ML])/);
+
+      commands.forEach(cmd => {
+        const trimmed = cmd.trim();
+        if (!trimmed) return;
+
+        // Extract coordinates after M or L
+        const coords = trimmed.substring(1).trim().split(/\s+L\s+|\s+/);
+        coords.forEach(coord => {
+          const [x, y] = coord.split(',').map(parseFloat);
+          if (!isNaN(x) && !isNaN(y)) {
+            points.push({ x, y });
+          }
+        });
+      });
+
+      return points;
     }
 
     function renderRiverList() {
@@ -310,13 +407,27 @@
         const nameSpan = document.createElement('span');
         nameSpan.textContent = river.name;
 
+        const rightSide = document.createElement('div');
+
         const indexSpan = document.createElement('span');
         indexSpan.textContent = `#${river.index}`;
         indexSpan.style.fontSize = '0.85rem';
         indexSpan.style.color = '#666';
+        indexSpan.style.marginRight = '8px';
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = '×';
+        deleteBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteRiver(river);
+        };
+
+        rightSide.appendChild(indexSpan);
+        rightSide.appendChild(deleteBtn);
 
         div.appendChild(nameSpan);
-        div.appendChild(indexSpan);
+        div.appendChild(rightSide);
         div.onclick = () => selectRiver(river);
 
         listElement.appendChild(div);
@@ -453,7 +564,63 @@
       document.getElementById('stats').innerHTML = `Rivers drawn: ${drawn} / ${total}`;
     }
 
-    function exportRivers() {
+    function getNextAvailableIndex() {
+      const usedIndices = rivers.map(r => r.index);
+      let nextIndex = 0;
+      while (usedIndices.includes(nextIndex)) {
+        nextIndex++;
+      }
+      return nextIndex;
+    }
+
+    function addNewRiver() {
+      const nameInput = document.getElementById('new-river-name');
+      const idInput = document.getElementById('new-river-id');
+
+      const name = nameInput.value.trim();
+      const id = idInput.value.trim().toLowerCase();
+
+      if (!name || !id) {
+        alert('Please enter both river name and ID');
+        return;
+      }
+
+      if (rivers.find(r => r.id === id)) {
+        alert('River ID already exists');
+        return;
+      }
+
+      const index = getNextAvailableIndex();
+      rivers.push({ id, name, index });
+      rivers.sort((a, b) => a.index - b.index);
+
+      nameInput.value = '';
+      idInput.value = '';
+
+      renderRiverList();
+      updateStats();
+      alert(`Added ${name} with index ${index}`);
+    }
+
+    function deleteRiver(river) {
+      if (!confirm(`Delete ${river.name}? This will also remove any drawn path.`)) {
+        return;
+      }
+
+      rivers = rivers.filter(r => r.index !== river.index);
+      delete drawnRivers[river.index];
+
+      // Remove from SVG
+      const pathElement = svgElement.querySelector(`#river-${river.index}`);
+      if (pathElement) {
+        pathElement.remove();
+      }
+
+      renderRiverList();
+      updateStats();
+    }
+
+    function exportSVG() {
       const indices = Object.keys(drawnRivers).sort((a, b) => parseInt(a) - parseInt(b));
 
       let svg = '<!-- River paths for Germany map -->\n';
@@ -467,14 +634,46 @@
 
       svg += '</g>\n';
 
-      document.getElementById('export-output').value = svg;
+      document.getElementById('export-svg').value = svg;
     }
 
-    function copyToClipboard() {
-      const textarea = document.getElementById('export-output');
-      if (!textarea.value) {
-        alert('Generate SVG code first');
-        return;
+    function exportTypeScript() {
+      const drawnIndices = Object.keys(drawnRivers).map(i => parseInt(i));
+      const drawnRiverObjects = rivers.filter(r => drawnIndices.includes(r.index));
+      drawnRiverObjects.sort((a, b) => a.index - b.index);
+
+      let ts = "import type { River } from '$lib/types'\n";
+      ts += "import { findLocationById, findLocationByName } from './dataHelpers'\n\n";
+      ts += "export const rivers: readonly River[] = [\n";
+
+      drawnRiverObjects.forEach(river => {
+        ts += `  { id: '${river.id}', name: '${river.name}', svgPathId: 'river-${river.index}' },\n`;
+      });
+
+      ts += "]\n\n";
+      ts += "// Helper functions\n";
+      ts += "export const getRiverById = (id: string) =>\n";
+      ts += "  findLocationById(rivers, id)\n\n";
+      ts += "export const getRiverByName = (name: string) =>\n";
+      ts += "  findLocationByName(rivers, name)\n";
+
+      document.getElementById('export-ts').value = ts;
+    }
+
+    function copyToClipboard(type) {
+      let textarea;
+      if (type === 'svg') {
+        textarea = document.getElementById('export-svg');
+        if (!textarea.value) {
+          alert('Generate SVG code first');
+          return;
+        }
+      } else if (type === 'ts') {
+        textarea = document.getElementById('export-ts');
+        if (!textarea.value) {
+          alert('Generate TypeScript code first');
+          return;
+        }
       }
       textarea.select();
       document.execCommand('copy');
