@@ -225,4 +225,28 @@ describe('Game State Store', () => {
     expect(regions.correct).toHaveLength(0)
     expect(regions.incorrect).toHaveLength(0)
   })
+
+  it('should set isSessionActive to false when session ends', () => {
+    gameState.startNewSession('orte')
+    expect(get(isSessionActive)).toBe(true)
+
+    // Answer all questions
+    let state = get(gameState)
+    const totalQuestions = state.currentSession!.totalQuestions
+
+    for (let i = 0; i < totalQuestions; i++) {
+      state = get(gameState)
+      if (!state.currentQuestion) break
+      submitCorrectAnswer(state.currentQuestion.location)
+    }
+
+    // After all questions are answered, isSessionActive should be false
+    expect(get(isSessionActive)).toBe(false)
+
+    // Session should still exist with endTime set
+    state = get(gameState)
+    expect(state.currentSession).toBeTruthy()
+    expect(state.currentSession!.endTime).toBeTruthy()
+    expect(state.currentQuestion).toBeNull()
+  })
 })

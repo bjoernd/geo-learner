@@ -15,6 +15,7 @@
   let showSettings = false
   let showStatistics = false
   let timerComponent: any
+  let lastProcessedSessionEnd: number | null = null
 
   $: currentMode = $gameState.currentMode
   $: currentQuestion = $gameState.currentQuestion
@@ -174,8 +175,9 @@
   }
 
   // Watch for session end
-  $: if (currentSession && !currentQuestion && currentSession.endTime) {
+  $: if (currentSession && !currentQuestion && currentSession.endTime && currentSession.endTime !== lastProcessedSessionEnd) {
     // Session ended, record statistics
+    lastProcessedSessionEnd = currentSession.endTime
     statistics.recordSession(currentSession)
     setTimeout(() => {
       const maxScore = currentSession.mode === 'laender' ? currentSession.totalQuestions * 2 : currentSession.totalQuestions
@@ -184,8 +186,10 @@
       )
       if (playAgain && currentMode) {
         gameState.startNewSession(currentMode)
+        lastProcessedSessionEnd = null
       } else {
         gameState.clearSession()
+        lastProcessedSessionEnd = null
       }
     }, 500)
   }

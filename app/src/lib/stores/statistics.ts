@@ -33,7 +33,7 @@ function createStatisticsStore() {
     recordSession: (session: GameSession) => {
       store.update(stats => {
         const mode = session.mode
-        const modeStats = stats.byMode[mode]
+        const modeStats = stats.byMode[mode] || { ...defaultModeStats }
 
         // Count correct answers (location + capital if applicable)
         let correctAnswers = 0
