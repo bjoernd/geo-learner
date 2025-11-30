@@ -5,13 +5,19 @@ export const rivers: readonly River[] = [
   { id: 'fulda', name: 'Fulda', svgPathId: 'river-0' },
   { id: 'ems', name: 'Ems', svgPathId: 'river-1' },
   { id: 'saale', name: 'Saale', svgPathId: 'river-2' },
+  { id: 'nokanal', name: 'Nord-Ostsee-Kanal', svgPathId: 'river-3' },
   { id: 'aller', name: 'Aller', svgPathId: 'river-4' },
+  { id: 'ohakanal', name: 'Oder-Havel-Kanal', svgPathId: 'river-5' },
   { id: 'lippe', name: 'Lippe', svgPathId: 'river-6' },
   { id: 'moldau', name: 'Moldau', svgPathId: 'river-7' },
+  { id: 'mikanal', name: 'Mittellandkanal', svgPathId: 'river-8' },
   { id: 'warthe', name: 'Warthe', svgPathId: 'river-9' },
   { id: 'rhein', name: 'Rhein', svgPathId: 'river-10' },
   { id: 'elbe', name: 'Elbe', svgPathId: 'river-11' },
+  { id: 'madokanal', name: 'Main-Donau-Kanal', svgPathId: 'river-12' },
   { id: 'havel', name: 'Havel', svgPathId: 'river-13' },
+  { id: 'muritz', name: 'Müritz', svgPathId: 'river-14' },
+  { id: 'bodensee', name: 'Bodensee', svgPathId: 'river-15' },
   { id: 'spree', name: 'Spree', svgPathId: 'river-17' },
   { id: 'oder', name: 'Oder', svgPathId: 'river-22' },
   { id: 'main', name: 'Main', svgPathId: 'river-32' },
@@ -25,7 +31,7 @@ export const rivers: readonly River[] = [
   { id: 'ijssel', name: 'IJssel', svgPathId: 'river-45' },
   { id: 'neckar', name: 'Neckar', svgPathId: 'river-47' },
   { id: 'chiemsee', name: 'Chiemsee', svgPathId: 'river-49' },
-  { id: 'schwerinersee', name: 'Schweriner See', svgPathId: 'river-50' }
+  { id: 'schwerinersee', name: 'Schweriner See', svgPathId: 'river-50' },
 ]
 
 // Helper functions
