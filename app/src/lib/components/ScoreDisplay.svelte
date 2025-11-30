@@ -6,9 +6,8 @@
 
   $: displayScore = session?.score ?? $currentScore
   $: totalQuestions = session?.totalQuestions ?? 0
-  $: percentage = totalQuestions > 0 ? Math.round((displayScore / (totalQuestions * 2)) * 100) : 0
-  // Note: totalQuestions * 2 because we get points for location AND capital in some modes
-  // This calculation may need adjustment based on actual game logic
+  $: maxScore = session?.mode === 'laender' ? totalQuestions * 2 : totalQuestions
+  $: percentage = totalQuestions > 0 ? Math.round((displayScore / maxScore) * 100) : 0
 </script>
 
 <div class="score-display">
@@ -16,7 +15,7 @@
     <span class="score-label">Punktzahl:</span>
     <span class="score-value">{displayScore}</span>
     {#if totalQuestions > 0}
-      <span class="score-total">/ {totalQuestions * 2}</span>
+      <span class="score-total">/ {maxScore}</span>
     {/if}
   </div>
   {#if totalQuestions > 0}

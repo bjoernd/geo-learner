@@ -178,8 +178,9 @@
     // Session ended, record statistics
     statistics.recordSession(currentSession)
     setTimeout(() => {
+      const maxScore = currentSession.mode === 'laender' ? currentSession.totalQuestions * 2 : currentSession.totalQuestions
       const playAgain = confirm(
-        `Sitzung beendet!\nPunktzahl: ${currentSession.score}/${currentSession.totalQuestions * 2}\n\nNoch eine Runde spielen?`
+        `Sitzung beendet!\nPunktzahl: ${currentSession.score}/${maxScore}\n\nNoch eine Runde spielen?`
       )
       if (playAgain && currentMode) {
         gameState.startNewSession(currentMode)

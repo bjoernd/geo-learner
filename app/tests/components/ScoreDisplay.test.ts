@@ -35,4 +35,34 @@ describe('ScoreDisplay Component', () => {
     render(ScoreDisplay, { props: { session: mockSession } })
     expect(screen.getByText('50%')).toBeInTheDocument()
   })
+
+  it('should calculate max score correctly for orte mode', () => {
+    const mockSession: GameSession = {
+      mode: 'orte',
+      score: 10,
+      totalQuestions: 15,
+      answers: [],
+      startTime: Date.now()
+    }
+
+    render(ScoreDisplay, { props: { session: mockSession } })
+    expect(screen.getByText('10')).toBeInTheDocument()
+    expect(screen.getByText('/ 15')).toBeInTheDocument()
+    expect(screen.getByText('67%')).toBeInTheDocument()
+  })
+
+  it('should calculate max score correctly for laender mode', () => {
+    const mockSession: GameSession = {
+      mode: 'laender',
+      score: 10,
+      totalQuestions: 10,
+      answers: [],
+      startTime: Date.now()
+    }
+
+    render(ScoreDisplay, { props: { session: mockSession } })
+    expect(screen.getByText('10')).toBeInTheDocument()
+    expect(screen.getByText('/ 20')).toBeInTheDocument()
+    expect(screen.getByText('50%')).toBeInTheDocument()
+  })
 })
