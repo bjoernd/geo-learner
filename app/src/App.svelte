@@ -185,8 +185,13 @@
         `Sitzung beendet!\nPunktzahl: ${currentSession.score}/${maxScore}\n\nNoch eine Runde spielen?`
       )
       if (playAgain && currentMode) {
+        resetMapHighlights()
+        cityFeedbackItems = []
         gameState.startNewSession(currentMode)
         lastProcessedSessionEnd = null
+        if (timerComponent) {
+          timerComponent.reset()
+        }
       } else {
         gameState.clearSession()
         lastProcessedSessionEnd = null
