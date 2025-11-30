@@ -54,12 +54,31 @@
       region.addEventListener('mouseleave', handleRegionUnhover)
     })
 
-    // Add handlers to river paths
+    // Add handlers to river paths with wider invisible hit areas
     const riverPaths = svgElement.querySelectorAll('.river-path')
     riverPaths.forEach(path => {
-      path.addEventListener('click', handleRiverClick)
-      path.addEventListener('mouseenter', handleRiverHover)
-      path.addEventListener('mouseleave', handleRiverUnhover)
+      // Create invisible wider path for easier clicking
+      const hitArea = path.cloneNode(true) as SVGPathElement
+      hitArea.classList.add('river-hit-area')
+      hitArea.removeAttribute('id')
+      hitArea.style.stroke = 'transparent'
+      hitArea.style.strokeWidth = '10'
+      hitArea.style.fill = 'none'
+      hitArea.style.pointerEvents = 'stroke'
+
+      // Store reference to visible path on hit area
+      ;(hitArea as any).visiblePath = path
+
+      // Insert hit area before visible path
+      path.parentNode!.insertBefore(hitArea, path)
+
+      // Add event listeners to hit area
+      hitArea.addEventListener('click', handleRiverClick)
+      hitArea.addEventListener('mouseenter', handleRiverHover)
+      hitArea.addEventListener('mouseleave', handleRiverUnhover)
+
+      // Make visible path non-interactive
+      ;(path as SVGPathElement).style.pointerEvents = 'none'
     })
 
     // Also handle clicks on the SVG itself (for city mode)
@@ -172,8 +191,9 @@
 
   function handleRiverClick(event: Event) {
     event.stopPropagation()
-    const target = event.target as SVGPathElement
-    const riverId = target.id
+    const hitArea = event.target as any
+    const visiblePath = hitArea.visiblePath as SVGPathElement
+    const riverId = visiblePath.id
 
     dispatch('regionClick', {
       regionId: riverId,
@@ -182,13 +202,15 @@
   }
 
   function handleRiverHover(event: Event) {
-    const target = event.target as SVGPathElement
-    target.classList.add('hovered')
+    const hitArea = event.target as any
+    const visiblePath = hitArea.visiblePath as SVGPathElement
+    visiblePath.classList.add('hovered')
   }
 
   function handleRiverUnhover(event: Event) {
-    const target = event.target as SVGPathElement
-    target.classList.remove('hovered')
+    const hitArea = event.target as any
+    const visiblePath = hitArea.visiblePath as SVGPathElement
+    visiblePath.classList.remove('hovered')
   }
 
   // React to prop changes for highlighting
