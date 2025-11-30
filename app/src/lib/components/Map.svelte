@@ -22,6 +22,7 @@
   let cursorCircle: SVGCircleElement | null = null
   let mousePosition: { svgX: number; svgY: number } | null = null
   let cityFeedbackGroup: SVGGElement | null = null
+  let riverHitAreas: SVGPathElement[] = []
 
   const CITY_CLICK_THRESHOLD = 30 // pixels - must match gameState.ts
 
@@ -64,7 +65,7 @@
       hitArea.style.stroke = 'transparent'
       hitArea.style.strokeWidth = '10'
       hitArea.style.fill = 'none'
-      hitArea.style.pointerEvents = 'stroke'
+      hitArea.style.pointerEvents = 'none' // Will be enabled only in orte mode
 
       // Store reference to visible path on hit area
       ;(hitArea as any).visiblePath = path
@@ -76,6 +77,9 @@
       hitArea.addEventListener('click', handleRiverClick)
       hitArea.addEventListener('mouseenter', handleRiverHover)
       hitArea.addEventListener('mouseleave', handleRiverUnhover)
+
+      // Store hit area for later enable/disable
+      riverHitAreas.push(hitArea)
 
       // Make visible path non-interactive
       ;(path as SVGPathElement).style.pointerEvents = 'none'
@@ -147,6 +151,13 @@
     if (cursorCircle) {
       cursorCircle.style.display = mode === 'orte' ? 'block' : 'none'
     }
+  }
+
+  function updateRiverInteractivity() {
+    riverHitAreas.forEach(hitArea => {
+      // Only enable river interactions in orte mode
+      hitArea.style.pointerEvents = mode === 'orte' ? 'stroke' : 'none'
+    })
   }
 
   function handleRegionClick(event: Event) {
@@ -227,6 +238,12 @@
   $: if (mapLoaded && cursorCircle) {
     void mode
     updateCursorVisibility()
+  }
+
+  // Enable/disable river interactions based on mode
+  $: if (mapLoaded && riverHitAreas.length > 0) {
+    void mode
+    updateRiverInteractivity()
   }
 
   // React to cityFeedbackItems changes
