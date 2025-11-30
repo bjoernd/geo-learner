@@ -20,6 +20,12 @@ export interface City extends Location {
   coordinates: { x: number; y: number }
 }
 
+export interface River {
+  id: string
+  name: string
+  svgPathIndices: number[] // Rivers can have multiple disconnected segments
+}
+
 export interface Question {
   location: Location
   type: 'location' | 'capital'
