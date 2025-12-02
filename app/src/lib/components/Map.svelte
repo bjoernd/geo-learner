@@ -30,27 +30,24 @@
     try {
       // Load SVG file
       const response = await fetch(import.meta.env.BASE_URL + 'germany-map.svg')
-      const svgText = await response.text()
-
-      // Parse SVG safely using DOMParser
-      const parser = new DOMParser()
-      const svgDoc = parser.parseFromString(svgText, 'image/svg+xml')
-
-      // Check for parsing errors
-      const parserError = svgDoc.querySelector('parsererror')
-      if (parserError) {
-        console.error('SVG parsing failed:', parserError.textContent)
+      if (!response.ok) {
+        console.error(`Failed to fetch SVG: ${response.status} ${response.statusText}`)
         return
       }
 
-      const parsedSvgElement = svgDoc.documentElement
+      let svgText = await response.text()
 
-      // Remove any script elements (defense in depth)
-      parsedSvgElement.querySelectorAll('script').forEach(script => script.remove())
+      // Sanitize: Remove script tags from text (case-insensitive, handles attributes)
+      svgText = svgText.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
 
-      // Insert sanitized SVG into container
-      mapContainer.appendChild(parsedSvgElement)
-      svgElement = parsedSvgElement as unknown as SVGSVGElement
+      // Insert sanitized SVG directly
+      mapContainer.innerHTML = svgText
+      svgElement = mapContainer.querySelector('svg')!
+
+      if (!svgElement) {
+        console.error('SVG element not found after insertion')
+        return
+      }
 
       // Set up click handlers
       setupClickHandlers()
