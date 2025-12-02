@@ -1,5 +1,6 @@
 import { createPersistedStore } from './createPersistedStore'
 import type { Settings } from '$lib/types'
+import { validateSettings } from '$lib/utils/validators'
 
 const STORAGE_KEY = 'geo-learner-settings'
 
@@ -12,7 +13,8 @@ function createSettingsStore() {
   const store = createPersistedStore({
     key: STORAGE_KEY,
     defaultValue: defaultSettings,
-    merge: true // Merge to handle schema changes
+    merge: true, // Merge to handle schema changes
+    validator: validateSettings
   })
 
   return {

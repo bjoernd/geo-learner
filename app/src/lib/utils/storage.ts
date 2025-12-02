@@ -1,6 +1,8 @@
 /**
- * Generic localStorage wrapper with error handling
+ * Generic localStorage wrapper with error handling and validation
  */
+
+type Validator<T> = (value: unknown) => value is T
 
 export function saveToStorage<T>(key: string, value: T): boolean {
   try {
@@ -10,19 +12,42 @@ export function saveToStorage<T>(key: string, value: T): boolean {
   } catch (error) {
     console.error(`Failed to save to localStorage (key: ${key}):`, error)
     if (error instanceof Error && error.name === 'QuotaExceededError') {
-      console.error('LocalStorage quota exceeded')
+      console.error('LocalStorage quota exceeded. Cannot save data.')
+      if (typeof window !== 'undefined') {
+        alert(
+          'Speicher voll: Daten können nicht gespeichert werden. ' +
+            'Bitte löschen Sie den Browser-Cache in den Einstellungen.'
+        )
+      }
     }
     return false
   }
 }
 
-export function loadFromStorage<T>(key: string, defaultValue: T): T {
+export function loadFromStorage<T>(
+  key: string,
+  defaultValue: T,
+  validator?: Validator<T>
+): T {
   try {
     const item = localStorage.getItem(key)
     if (item === null) {
       return defaultValue
     }
-    return JSON.parse(item) as T
+
+    const parsed = JSON.parse(item)
+
+    // Validate data if validator provided
+    if (validator) {
+      if (!validator(parsed)) {
+        console.error(
+          `Invalid data structure in localStorage (key: ${key}). Using default value.`
+        )
+        return defaultValue
+      }
+    }
+
+    return parsed as T
   } catch (error) {
     console.error(`Failed to load from localStorage (key: ${key}):`, error)
     return defaultValue

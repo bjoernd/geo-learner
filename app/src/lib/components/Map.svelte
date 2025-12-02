@@ -32,9 +32,25 @@
       const response = await fetch(import.meta.env.BASE_URL + 'germany-map.svg')
       const svgText = await response.text()
 
-      // Insert SVG into container
-      mapContainer.innerHTML = svgText
-      svgElement = mapContainer.querySelector('svg')!
+      // Parse SVG safely using DOMParser
+      const parser = new DOMParser()
+      const svgDoc = parser.parseFromString(svgText, 'image/svg+xml')
+
+      // Check for parsing errors
+      const parserError = svgDoc.querySelector('parsererror')
+      if (parserError) {
+        console.error('SVG parsing failed:', parserError.textContent)
+        return
+      }
+
+      const parsedSvgElement = svgDoc.documentElement
+
+      // Remove any script elements (defense in depth)
+      parsedSvgElement.querySelectorAll('script').forEach(script => script.remove())
+
+      // Insert sanitized SVG into container
+      mapContainer.appendChild(parsedSvgElement)
+      svgElement = parsedSvgElement as unknown as SVGSVGElement
 
       // Set up click handlers
       setupClickHandlers()

@@ -1,5 +1,6 @@
 import { createPersistedStore } from './createPersistedStore'
 import type { Statistics, GameSession, GameMode, ModeStatistics } from '$lib/types'
+import { validateStatistics } from '$lib/utils/validators'
 
 const STORAGE_KEY = 'geo-learner-statistics'
 
@@ -24,7 +25,8 @@ function createStatisticsStore() {
   const store = createPersistedStore({
     key: STORAGE_KEY,
     defaultValue: defaultStatistics,
-    merge: false
+    merge: false,
+    validator: validateStatistics
   })
 
   return {
