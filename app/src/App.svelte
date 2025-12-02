@@ -221,7 +221,7 @@
     </div>
   </header>
 
-  {#if !$isSessionActive}
+  {#if !currentSession}
     <div class="mode-selection">
       <ModeSelector
         currentMode={currentMode}
