@@ -4,6 +4,8 @@
   import ScoreDisplay from '$lib/components/ScoreDisplay.svelte'
   import ModeSelector from '$lib/components/ModeSelector.svelte'
   import CapitalInputModal from '$lib/components/CapitalInputModal.svelte'
+  import SessionSummaryModal from '$lib/components/SessionSummaryModal.svelte'
+  import ConfirmModal from '$lib/components/ConfirmModal.svelte'
   import Timer from '$lib/components/Timer.svelte'
   import Settings from '$lib/components/Settings.svelte'
   import Statistics from '$lib/components/Statistics.svelte'
@@ -14,6 +16,9 @@
 
   let showSettings = false
   let showStatistics = false
+  let showSessionSummary = false
+  let showModeSwitchConfirm = false
+  let pendingMode: GameMode | null = null
   let timerComponent: any
   let lastProcessedSessionEnd: number | null = null
 
@@ -49,16 +54,34 @@
 
   function handleModeSelect(event: CustomEvent<{ mode: GameMode }>) {
     if ($isSessionActive) {
-      const confirmed = confirm('Dies beendet die aktuelle Sitzung. Fortfahren?')
-      if (!confirmed) return
+      pendingMode = event.detail.mode
+      showModeSwitchConfirm = true
+      return
     }
 
-    gameState.startNewSession(event.detail.mode)
+    startNewSessionWithMode(event.detail.mode)
+  }
+
+  function startNewSessionWithMode(mode: GameMode) {
+    gameState.startNewSession(mode)
     resetMapHighlights()
-    cityFeedbackItems = [] // Clear city feedback for new session
+    cityFeedbackItems = []
     if (timerComponent) {
       timerComponent.reset()
     }
+  }
+
+  function handleModeSwitchConfirm() {
+    showModeSwitchConfirm = false
+    if (pendingMode) {
+      startNewSessionWithMode(pendingMode)
+      pendingMode = null
+    }
+  }
+
+  function handleModeSwitchCancel() {
+    showModeSwitchConfirm = false
+    pendingMode = null
   }
 
   function handleRegionClick(event: CustomEvent<{ regionId: string; svgPathId: string }>) {
@@ -171,7 +194,6 @@
     statistics.reset()
     gameState.clearSession()
     showSettings = false
-    alert('Alle Fortschritte wurden zurückgesetzt.')
   }
 
   // Watch for session end
@@ -180,23 +202,14 @@
     lastProcessedSessionEnd = currentSession.endTime
     statistics.recordSession(currentSession)
     setTimeout(() => {
-      const maxScore = currentSession.mode === 'laender' ? currentSession.totalQuestions * 2 : currentSession.totalQuestions
-      const playAgain = confirm(
-        `Sitzung beendet!\nPunktzahl: ${currentSession.score}/${maxScore}\n\nNoch eine Runde spielen?`
-      )
-      if (playAgain && currentMode) {
-        resetMapHighlights()
-        cityFeedbackItems = []
-        gameState.startNewSession(currentMode)
-        lastProcessedSessionEnd = null
-        if (timerComponent) {
-          timerComponent.reset()
-        }
-      } else {
-        gameState.clearSession()
-        lastProcessedSessionEnd = null
-      }
+      showSessionSummary = true
     }, 500)
+  }
+
+  function handleSessionSummaryClose() {
+    showSessionSummary = false
+    gameState.clearSession()
+    lastProcessedSessionEnd = null
   }
 </script>
 
@@ -284,6 +297,22 @@
   <Statistics
     show={showStatistics}
     on:close={handleStatisticsClose}
+  />
+
+  <SessionSummaryModal
+    show={showSessionSummary}
+    session={currentSession}
+    on:close={handleSessionSummaryClose}
+  />
+
+  <ConfirmModal
+    show={showModeSwitchConfirm}
+    title="Sitzung beenden?"
+    message="Dies beendet die aktuelle Sitzung. Fortfahren?"
+    confirmText="Ja"
+    cancelText="Abbrechen"
+    on:confirm={handleModeSwitchConfirm}
+    on:cancel={handleModeSwitchCancel}
   />
 </main>
 
