@@ -29,7 +29,7 @@
   onMount(async () => {
     try {
       // Load SVG file
-      const response = await fetch('/src/assets/germany-map.svg')
+      const response = await fetch(import.meta.env.BASE_URL + 'germany-map.svg')
       const svgText = await response.text()
 
       // Insert SVG into container

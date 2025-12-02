@@ -27,3 +27,5 @@ vite.config.js
 *.njsproj
 *.sln
 *.sw?
+
+DEPLOYMENT.md
