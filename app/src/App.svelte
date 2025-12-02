@@ -195,9 +195,10 @@
     // Session ended, record statistics
     lastProcessedSessionEnd = currentSession.endTime
     statistics.recordSession(currentSession)
+    // Wait a few seconds to let user see final map state with feedback
     setTimeout(() => {
       showSessionSummary = true
-    }, 500)
+    }, 3000)
   }
 
   function handleSessionSummaryClose() {
