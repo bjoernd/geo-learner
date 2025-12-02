@@ -132,26 +132,20 @@
     // Show feedback - get updated state after submission
     const updatedState = $gameState
     capitalModalIsCorrect = updatedState.lastAnswerCorrect
-
-    // After showing feedback, close modal and continue
-    setTimeout(() => {
-      showCapitalModal = false
-      capitalModalIsCorrect = null
-
-      if (updatedState.lastAnswerCorrect === false) {
-        showIncorrectFeedback()
-      } else {
-        resetMapHighlights()
-      }
-    }, 2000)
   }
 
   function handleCapitalModalClose() {
     // Only allow closing if feedback has been shown
     if (capitalModalIsCorrect !== null) {
+      const wasCorrect = capitalModalIsCorrect
       showCapitalModal = false
       capitalModalIsCorrect = null
-      resetMapHighlights()
+
+      if (wasCorrect === false) {
+        showIncorrectFeedback()
+      } else {
+        resetMapHighlights()
+      }
     }
   }
 
